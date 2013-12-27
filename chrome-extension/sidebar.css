@@ -1,0 +1,59 @@
+.trans-container {
+    background: #eee;
+    min-height: 200px;
+    min-width: 200px;
+    position: relative;
+}
+.trans {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    left: 50%;
+    top: 50%;
+    margin: -26px -26px;
+}
+.trans:before {
+    content: '';
+    display: block;
+    border: solid #999;
+    border-width: 1px 0;
+    height: 17px;
+    width: 100%;
+    position: absolute;
+    top: 16px;
+}
+.trans:after {
+    content: '';
+    display: block;
+    border: solid #999;
+    border-width: 0 1px;
+    width: 17px;
+    height: 100%;
+    position: absolute;
+    left: 16px
+}
+.trans .arrow {
+    display: block;
+    width: 3px;
+    height: 40px;
+    background: #666;
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+}
+.trans .arrow:after {
+    content: '';
+    width: 0;
+    height: 0;
+    display: block;
+    border: solid transparent;
+    border-bottom-color: #666;
+    border-width: 0 7px 11px 7px;
+    position: absolute;
+    top: -11px;
+    left: -5px;
+}
+.trans-base {
+    opacity: 0.3;
+}
