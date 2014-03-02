@@ -21,8 +21,8 @@ chrome.devtools.panels.elements.createSidebarPane(
 	function (sidebar) {
 		function setSidebarData() {
 			// sidebar.setExpression('(' + getElementData.toString() + ')()');
-			sidebar.setHeight('300px');
-			sidebar.setPage('sidebar.html');
+			sidebar.setHeight('400px');
+			sidebar.setPage('tools/transform/sidebar.html');
 		}
 		setSidebarData();
 		chrome.devtools.panels.elements.onSelectionChanged.addListener(setSidebarData);
