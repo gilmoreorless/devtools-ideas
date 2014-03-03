@@ -1,5 +1,5 @@
 var bgPage = chrome.runtime.connect({
-	name: 'devtools-metrics-sidebar'
+	name: 'devtoolsMetricsMain'
 });
 
 bgPage.onMessage.addListener(function (msg) {
@@ -8,7 +8,7 @@ bgPage.onMessage.addListener(function (msg) {
 
 bgPage.postMessage({
 	tabId: chrome.devtools.inspectedWindow.tabId,
-	scriptToInject: 'injected/dtm-content.js'
+	injectScript: 'injected/dtm-content.js'
 });
 
 chrome.devtools.panels.elements.createSidebarPane(
@@ -19,6 +19,12 @@ chrome.devtools.panels.elements.createSidebarPane(
 			sidebar.setPage('tools/transform/sidebar.html');
 		}
 		setSidebarData();
-		chrome.devtools.panels.elements.onSelectionChanged.addListener(setSidebarData);
+		// chrome.devtools.panels.elements.onSelectionChanged.addListener(setSidebarData);
+		chrome.devtools.panels.elements.onSelectionChanged.addListener(function () {
+			bgPage.postMessage({
+				tabId: chrome.devtools.inspectedWindow.tabId,
+				toSidebar: 'update'
+			});
+		});
 	}
 );
