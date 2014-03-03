@@ -1,6 +1,11 @@
 {
   "name": "Devtools Metrics TEST",
   "version": "0.1",
+  "background": {
+    "scripts": ["comms/background.js"],
+    "persistent": false
+  },
   "devtools_page": "devtools.html",
-  "manifest_version": 2
+  "manifest_version": 2,
+  "permissions": ["tabs", "http://*/*"]
 }
