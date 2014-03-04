@@ -19,10 +19,14 @@ function update() {
 		var transform = getAppliedValue(result, 'webkitTransform', 'none');
 		var origin = getAppliedValue(result, 'webkitTransformOrigin', '50% 50%');
 
-		document.getElementById('holder').innerHTML = 'transform: ' + transform +
-			'<br/>transform-origin: ' + origin;
-		document.querySelector('.trans-elem').style.webkitTransform = transform;
-		document.querySelector('.trans-elem').style.webkitTransformOrigin = origin;
+		// Update visual display
+		var transDisplay = document.querySelector('.trans-elem');
+		transDisplay.style.webkitTransform = transform;
+		transDisplay.style.webkitTransformOrigin = origin;
+
+		// Update property list
+		document.querySelector('#t2d-prop-transform .value').textContent = transform;
+		document.querySelector('#t2d-prop-transform-origin .value').textContent = origin;
 	});
 }
 

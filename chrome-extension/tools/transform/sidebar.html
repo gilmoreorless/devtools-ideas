@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf8">
-	<title>This is a title</title>
-	<link rel="stylesheet" href="sidebar.css">
-	<style>
-		body {
-			/*background: #ffc;*/
-		}
-	</style>
+    <meta charset="utf8">
+    <title>This is a title</title>
+    <link rel="stylesheet" href="sidebar.css">
 </head>
 <body>
-    <div id="transforms">
+    <div class="styles-section computed-style expanded" id="transform2d">
         <h4>Transforms</h4>
         <div class="trans-container">
             <div class="trans trans-base">
@@ -21,8 +16,19 @@
                 <span class="arrow"></span>
             </div>
         </div>
+        <div class="relevant-properties">
+            <ul class="properties properties-tree monospace">
+                <li id="t2d-prop-transform">
+                    <span class="webkit-css-property">-webkit-transform</span>:
+                    <span class="value"></span>;
+                </li>
+                <li id="t2d-prop-transform-origin">
+                    <span class="webkit-css-property">-webkit-transform-origin</span>:
+                    <span class="value"></span>;
+                </li>
+            </ul>
+        </div>
     </div>
-	<div id="holder"></div>
-	<script src="sidebar.js"></script>
+    <script src="sidebar.js"></script>
 </body>
 </html>
