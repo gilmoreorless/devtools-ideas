@@ -118,7 +118,7 @@ h4 {
     border: 1px dashed #ccc;
     margin-bottom: 1em;
     min-height: 150px;
-    min-width: 200px;
+    min-width: 150px;
     position: relative;
 }
 .trans {
@@ -170,6 +170,19 @@ h4 {
     position: absolute;
     top: -11px;
     left: -5px;
+}
+.trans .origin {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border: 2px solid #c00;
+    border-radius: 50%;
+    margin: -4px 0 0 -4px;
+}
+.trans .top {
+    position: absolute;
+    top: 2px;
+    left: 2px;
 }
 .trans-base {
     opacity: 0.3;

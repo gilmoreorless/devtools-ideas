@@ -20,9 +20,12 @@ function update() {
 		var origin = getAppliedValue(result, 'webkitTransformOrigin', '50% 50%');
 
 		// Update visual display
+		var transBase = document.querySelector('.trans-base');
 		var transDisplay = document.querySelector('.trans-elem');
 		transDisplay.style.webkitTransform = transform;
 		transDisplay.style.webkitTransformOrigin = origin;
+		transBase.querySelector('.origin').style.left = getAppliedValue(result, 'webkitTransformOriginX', '50%');
+		transBase.querySelector('.origin').style.top = getAppliedValue(result, 'webkitTransformOriginY', '50%');
 
 		// Update property list
 		document.querySelector('#t2d-prop-transform .value').textContent = transform;

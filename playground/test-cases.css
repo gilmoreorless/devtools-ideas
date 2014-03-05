@@ -5,7 +5,7 @@ body {
 }
 .cases {
     display: flex;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
 }
 .case {
     margin: 2.5em;
@@ -69,6 +69,14 @@ body {
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
     -webkit-transform-origin: 100% 100%;
-    transform-origin: 0 100%;
+    transform-origin: 100% 100%;
+}
+#t2d-flip {
+	-webkit-transform: scale(-1, 1);
+	transform: scale(-1, 1);
+}
+#t2d-invalid {
+	-webkit-transform: thingy(whatsit);
+	transform: thingy(whatsit);
 }
 
