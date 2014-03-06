@@ -1,0 +1,79 @@
+.kfa-container {
+    display: table;
+    width: 60%;
+}
+.kfa-properties, .kfa-timeline {
+    display: table-cell;
+    vertical-align: top;
+}
+.kfa-properties {
+    padding-top: 30px;
+    width: 150px;
+}
+.kfa-properties-list {
+    border: 0 dashed #ccc;
+    border-width: 1px 0 0 1px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.kfa-properties-list li {
+    border-bottom: 1px dashed #ccc;
+    box-sizing: border-box;
+    height: 30px;
+    line-height: 29px;
+    padding-left: 0.5em;
+}
+
+.kfa-timeline .kfa-header {
+    height: 30px;
+    position: relative;
+}
+.kfa-marker {
+    position: absolute;
+}
+.kfa-header .kfa-marker {
+    border-radius: 5px;
+    bottom: 0;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 11px;
+    height: 26px;
+    padding: 4px;
+    -webkit-transform: translate(-50%, 0);
+}
+.kfa-header .kfa-marker:hover {
+    background: #ff9;
+}
+.kfa-header .kfa-marker::after {
+    content: '';
+    border: 5px solid transparent;
+    border-top-color: #666;
+    bottom: -3px;
+    height: 0;
+    left: 50%;
+    margin-left: -5px;
+    position: absolute;
+    width: 0;
+}
+.kfa-timeline-list {
+    border: 0 solid #999;
+    border-width: 1px 1px 0 1px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.kfa-timeline-list li {
+    border-bottom: 1px solid #999;
+    box-sizing: border-box;
+    height: 30px;
+    line-height: 29px;
+    margin-left: -1px;
+    position: relative;
+}
+.kfa-timeline-list .kfa-marker {
+    background-color: #f33;
+    width: 1px;
+    height: 100%;
+}
+

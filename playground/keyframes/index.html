@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Keyframes test</title>
+    <link rel="stylesheet" href="keyframes.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <textarea id="input-css" cols="30" rows="10">
+@-webkit-keyframes simple {
+    from {
+        width: 90%;
+    }
+    50% {
+        width: 40%;
+    }
+    to {
+        width: 25%;
+    }
+}
+    </textarea>
+    <button id="parse-submit">Run it</button>
+    <pre id="parse-result"></pre>
+
+    <div id="animate-me">Animate me!</div>
+    <div id="main-container">
+
+        <!-- temp -->
+        <div class="kfa-container">
+            <div class="kfa-properties">
+                <ul class="kfa-properties-list">
+                    <!-- vertical list of properties being animated -->
+                    <li>width</li>
+                </ul>
+            </div>
+            <div class="kfa-timeline">
+                <div class="kfa-header">
+                    <!-- % marker text -->
+                    <span class="kfa-marker" style="left:0%;">0%</span>
+                    <span class="kfa-marker" style="left:50%;">50%</span>
+                    <span class="kfa-marker" style="left:100%;">100%</span>
+                </div>
+                <ul class="kfa-timeline-list">
+                    <li data-property="width">
+                        <span class="kfa-marker" style="left:0%;"></span>
+                        <span class="kfa-marker" style="left:50%;"></span>
+                        <span class="kfa-marker" style="left:100%;"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- end temp -->
+
+    </div>
+
+    <script src="../lib/css-parse.js"></script>
+    <script src="keyframes.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

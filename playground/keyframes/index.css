@@ -1,0 +1,15 @@
+body {
+    font: 13px 'Lucida Grande';
+}
+#animate-me {
+    padding: 20px;
+    background-color: hsl(180, 60%, 70%);
+
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+.kfa-container {
+    margin: 1em;
+}
