@@ -8,6 +8,7 @@
     });
 
     var kf = window.kf = new KeyframeExplainer(dom.mainContainer);
+    kf.addUpdateElement(dom.animateMe);
 
     function parse(str) {
         var parsed;
