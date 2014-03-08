@@ -26,6 +26,7 @@
 
         // Event listeners
         this.timelineHeader.addEventListener('click', onHeaderClick.bind(this), false);
+        this.timelineList.addEventListener('mousedown', onTimelineMousedown.bind(this), false);
     };
 
     kfp._renderStopTitles = function () {
@@ -132,9 +133,15 @@
     function normaliseFrames(frames) {
         var stopKeywords = {from: '0%', to: '100%'};
         return frames.map(function (frame) {
-            frame.stop = stopKeywords[frame.values[0]] || frame.values[0];
-            return frame;
-        }).sort(sortFrames);
+            return frame.values.map(function (value) {
+                return {
+                    stop: stopKeywords[value] || value,
+                    declarations: frame.declarations
+                };
+            });
+        }).reduce(function (memo, list) {
+            return memo.concat(list);
+        }, []).sort(sortFrames);
     }
 
     function getStops(frames) {
@@ -170,12 +177,14 @@
     }
 
     function timingValues(stop) {
-        var stopValue = parseFloat(stop) || 0;
+        var stopValue = stop;
+        if (typeof stopValue === 'string') {
+            stopValue = (parseFloat(stop) || 0) / 100;
+        }
         var granularity = 100; // ms
         if (Math.floor(stopValue) !== stopValue) {
             granularity = 1000;
         }
-        stopValue /= 100; // percentage
         return {
             total: granularity + 'ms',
             value: granularity * stopValue + 'ms'
@@ -221,6 +230,28 @@
             var stop = e.target.dataset.stop;
             this.setStop(stop);
         }
+    }
+
+    function onTimelineMousedown(e) {
+        var target = e.currentTarget;
+        this._tlMove = onTimelineMousemove.bind(this);
+        this._tlUp = onTimelineMouseup.bind(this);
+        target.addEventListener('mousemove', this._tlMove, false);
+        target.addEventListener('mouseup', this._tlUp, false);
+        onTimelineMousemove.call(this, e);
+    }
+
+    function onTimelineMousemove(e) {
+        var x = e.offsetX;
+        var w = e.currentTarget.offsetWidth;
+        var perc = x / w;
+        this.setStop(perc);
+    }
+
+    function onTimelineMouseup(e) {
+        var target = e.currentTarget;
+        target.removeEventListener('mousemove', this._tlMove, false);
+        target.removeEventListener('mouseup', this._tlUp, false);
     }
 
 
