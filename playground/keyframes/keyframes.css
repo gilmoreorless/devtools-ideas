@@ -1,6 +1,6 @@
 .kfa-container {
     display: table;
-    width: 60%;
+    width: 80%;
 }
 .kfa-properties, .kfa-timeline {
     display: table-cell;

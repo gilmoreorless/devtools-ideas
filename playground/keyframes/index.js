@@ -7,6 +7,8 @@
         dom[newId] = document.getElementById(id);
     });
 
+    var kf = window.kf = new KeyframeExplainer(dom.mainContainer);
+
     function parse(str) {
         var parsed;
         var output = dom.parseResult;
@@ -18,6 +20,7 @@
         } catch (e) {
             output.textContent = e;
         }
+        showTable(str);
     }
 
     function animate(str, ast) {
@@ -44,8 +47,14 @@
         dom.animateMe.style.webkitAnimationName = name;
     }
 
+    function showTable(str) {
+        kf.setKeyframes(str);
+    }
+
     dom.parseSubmit.addEventListener('click', function () {
         parse(dom.inputCss.value);
     }, false);
+
+    parse(dom.inputCss.value);
 
 })();
