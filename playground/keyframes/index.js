@@ -14,6 +14,7 @@
         var parsed;
         var output = dom.parseResult;
         output.textContent = '';
+        showTable(str);
         try {
             parsed = CSSParse(str);
             // output.textContent = JSON.stringify(parsed, null, 2);
@@ -21,7 +22,6 @@
         } catch (e) {
             output.textContent = e;
         }
-        showTable(str);
     }
 
     function animate(str, ast) {

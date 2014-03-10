@@ -41,6 +41,7 @@
     };
 
     kfp.setKeyframes = function (cssString) {
+        this.cleanup(true);
         var ast = parse(cssString);
         if (!ast) {
             return;
@@ -80,7 +81,6 @@
     };
 
     kfp.setStop = function (stop) {
-        console.log('setStop', stop, this._lastStop, this.updateElems);
         if (stop === this._lastStop) {
             return;
         }
@@ -89,13 +89,21 @@
             return;
         }
         var animName = newAnimationName(this.animation.name);
-        if (this._sheet) {
-            removeSheet(this._sheet);
-        }
+        this.cleanup();
         this._sheet = injectSheet(replaceAnimationName(this.animation.raw, animName));
         this.updateElems.forEach(function (elem) {
             setElementAnimation(elem, animName, timingValues(stop));
         });
+    };
+
+    kfp.cleanup = function (cleanAllElems) {
+        if (this._sheet) {
+            removeSheet(this._sheet);
+        }
+        this._sheet = null;
+        if (cleanAllElems) {
+            this.updateElems.forEach(removeElementAnimation);
+        }
     };
 
 
@@ -191,6 +199,19 @@
         };
     }
 
+    function newAnimationName(name) {
+        return name + '-kfa-' + ~~(Math.random() * 100000);
+    }
+
+    function replaceAnimationName(cssString, newName) {
+        return cssString.replace(/(keyframes\s+)([-\w]+)/g, function (match, keep) {
+            return keep + newName;
+        });
+    }
+
+
+    /*** Private DOM utils ***/
+
     function injectSheet(cssText) {
         var sheet = document.createElement('style');
         sheet.textContent = cssText;
@@ -199,7 +220,7 @@
     }
 
     function removeSheet(sheet) {
-        document.head.removeChild(sheet);
+        sheet.parentNode.removeChild(sheet);
     }
 
     function setElementAnimation(elem, name, timing) {
@@ -212,14 +233,17 @@
         s.webkitAnimationName = name;
     }
 
-    function newAnimationName(name) {
-        return name + '-kfa-' + ~~(Math.random() * 100000);
-    }
-
-    function replaceAnimationName(cssString, newName) {
-        return cssString.replace(/(keyframes\s+)([-\w]+)/g, function (match, keep) {
-            return keep + newName;
-        });
+    function removeElementAnimation(elem) {
+        var s = elem.style;
+        // TODO: Cross-browser support
+        // TODO: Preserve previous inline style values?
+        var props = [
+            '-webkit-animation-name',
+            '-webkit-animation-duration',
+            '-webkit-animation-delay',
+            '-webkit-animation-play-state'
+        ];
+        props.forEach(s.removeProperty.bind(s));
     }
 
 
@@ -232,26 +256,41 @@
         }
     }
 
+    function preventDefault(e) {
+        e.preventDefault();
+    }
+
     function onTimelineMousedown(e) {
-        var target = e.currentTarget;
-        this._tlMove = onTimelineMousemove.bind(this);
-        this._tlUp = onTimelineMouseup.bind(this);
-        target.addEventListener('mousemove', this._tlMove, false);
-        target.addEventListener('mouseup', this._tlUp, false);
-        onTimelineMousemove.call(this, e);
+        var timeline = e.currentTarget;
+        // Record coords for future reference
+        var tlx = timeline.getBoundingClientRect().left;
+        var tlw = timeline.offsetWidth;
+        this._tlProps = {
+            timelineX: tlx,
+            timelineW: tlw,
+            timelineElem: timeline,
+            onMove: onTimelineMousemove.bind(this),
+            onUp: onTimelineMouseup.bind(this)
+        };
+
+        timeline.addEventListener('mousemove', this._tlProps.onMove, false);
+        document.addEventListener('mouseup', this._tlProps.onUp, false);
+        document.addEventListener('selectstart', preventDefault, false);
+        this._tlProps.onMove(e);
     }
 
     function onTimelineMousemove(e) {
-        var x = e.offsetX;
-        var w = e.currentTarget.offsetWidth;
-        var perc = x / w;
+        var x = e.pageX;
+        var perc = (x - this._tlProps.timelineX) / this._tlProps.timelineW;
+        perc = Math.max(0, Math.min(1, perc));
         this.setStop(perc);
     }
 
     function onTimelineMouseup(e) {
-        var target = e.currentTarget;
-        target.removeEventListener('mousemove', this._tlMove, false);
-        target.removeEventListener('mouseup', this._tlUp, false);
+        this._tlProps.timelineElem.removeEventListener('mousemove', this._tlProps.onMove, false);
+        document.removeEventListener('mouseup', this._tlProps.onUp, false);
+        document.removeEventListener('selectstart', preventDefault, false);
+        delete this._tlProps;
     }
 
 

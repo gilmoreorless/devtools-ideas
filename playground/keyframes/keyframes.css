@@ -8,7 +8,7 @@
 }
 .kfa-properties {
     padding-top: 30px;
-    width: 150px;
+    /*width: 150px;*/
 }
 .kfa-properties-list {
     border: 0 dashed #ccc;
@@ -22,9 +22,13 @@
     box-sizing: border-box;
     height: 30px;
     line-height: 29px;
-    padding-left: 0.5em;
+    padding: 0 0.5em;
+    white-space: nowrap;
 }
 
+.kfa-timeline {
+    width: 100%;
+}
 .kfa-timeline .kfa-header {
     height: 30px;
     position: relative;
@@ -41,6 +45,7 @@
     height: 26px;
     padding: 4px;
     -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
 }
 .kfa-header .kfa-marker:hover {
     background: #ff9;
