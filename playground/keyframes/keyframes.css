@@ -13,11 +13,12 @@
 .kfa-properties-list {
     border: 0 dashed #ccc;
     border-width: 1px 0 0 1px;
+    border-right: 1px solid #ccc;
     list-style: none;
     margin: 0;
     padding: 0;
 }
-.kfa-properties-list li {
+.kfa-property-name {
     border-bottom: 1px dashed #ccc;
     box-sizing: border-box;
     height: 30px;
@@ -29,14 +30,16 @@
 .kfa-timeline {
     width: 100%;
 }
-.kfa-timeline .kfa-header {
+.kfa-timeline .kfa-header,
+.kfa-timeline .kfa-footer {
     height: 30px;
     position: relative;
 }
 .kfa-marker {
     position: absolute;
 }
-.kfa-header .kfa-marker {
+.kfa-header .kfa-marker,
+.kfa-footer .kfa-marker {
     border-radius: 5px;
     bottom: 0;
     box-sizing: border-box;
@@ -62,23 +65,37 @@
     width: 0;
 }
 .kfa-timeline-list {
-    border: 0 solid #999;
-    border-width: 1px 1px 0 1px;
+    border: 0 solid #ccc;
+    border-width: 1px 1px 0 0;
+    cursor: col-resize;
     list-style: none;
-    margin: 0;
+    margin: 0 0 0 -1px;
     padding: 0;
+    position: relative;
 }
-.kfa-timeline-list li {
-    border-bottom: 1px solid #999;
+.kfa-timeline-row {
+    border-bottom: 1px solid #ccc;
     box-sizing: border-box;
     height: 30px;
     line-height: 29px;
-    margin-left: -1px;
+    /* margin-left: -1px; */
     position: relative;
 }
 .kfa-timeline-list .kfa-marker {
     background-color: #f33;
-    width: 1px;
     height: 100%;
+    top: 0;
+    width: 1px;
+}
+.kfa-footer .kfa-marker::after {
+    content: '';
+    border: 5px solid transparent;
+    border-bottom-color: #666;
+    height: 0;
+    left: 50%;
+    margin-left: -5px;
+    position: absolute;
+    top: -7px;
+    width: 0;
 }
 

@@ -17,10 +17,11 @@
 
     kfp._setup = function () {
         this.container = put('div.kfa-container');
-        this.propsList = put(this.container, 'div.kfa-properties ul.kfa-properties-list');
+        this.propsList = put(this.container, 'div.kfa-properties div.kfa-properties-list');
         this.timelineContainer = put(this.container, 'div.kfa-timeline');
         this.timelineHeader = put(this.timelineContainer, 'div.kfa-header');
-        this.timelineList = put(this.timelineContainer, 'ul.kfa-timeline-list');
+        this.timelineList = put(this.timelineContainer, 'div.kfa-timeline-list');
+        this.timelineFooter = put(this.timelineContainer, 'div.kfa-footer');
         this.updateElems = [];
         this._lastStop = null;
 
@@ -35,8 +36,8 @@
     };
 
     kfp._renderPropertyRow = function (prop) {
-        put(this.propsList, 'li $', prop.name);
-        var row = put(this.timelineList, 'li[data-property=$]', prop.name);
+        put(this.propsList, 'div.kfa-property-name $', prop.name);
+        var row = put(this.timelineList, 'div.kfa-timeline-row[data-property=$]', prop.name);
         prop.values.forEach(markerGenerator(row, {prop: 'stop'}));
     };
 
@@ -46,7 +47,6 @@
         if (!ast) {
             return;
         }
-        console.log('AST', ast);
         // TODO: Show animation name as a title
         this.animation = ast.stylesheet.rules.filter(function (rule) {
             return rule.type === 'keyframes';
@@ -98,7 +98,7 @@
 
     kfp.cleanup = function (cleanAllElems) {
         if (this._sheet) {
-            removeSheet(this._sheet);
+            removeElem(this._sheet);
         }
         this._sheet = null;
         if (cleanAllElems) {
@@ -117,19 +117,6 @@
             console.error('CSS parsing error:', e);
         }
         return parsed;
-    }
-
-    function markerGenerator(parent, options) {
-        var withText = !!options.withText;
-        return function (stop) {
-            var marker = put(parent, 'span.kfa-marker');
-            var value = options.prop ? stop[options.prop] : stop;
-            if (withText) {
-                marker.textContent = value;
-            }
-            marker.style.left = value;
-            marker.dataset.stop = value;
-        };
     }
 
     function sortFrames(a, b) {
@@ -212,6 +199,28 @@
 
     /*** Private DOM utils ***/
 
+    function markerGenerator(parent, options) {
+        var withText = !!options.withText;
+        return function (stop) {
+            var marker = put(parent, 'span.kfa-marker');
+            var value = options.prop ? stop[options.prop] : stop;
+            if (withText) {
+                marker.textContent = value;
+            }
+            marker.style.left = value;
+            marker.dataset.stop = value;
+        };
+    }
+
+    function renderCurrentTimeMarker(kf) {
+        var textMarker = put(kf.timelineFooter, 'span.kfa-marker');
+        var lineMarker = put(kf.timelineList, 'span.kfa-marker');
+        return {
+            text: textMarker,
+            line: lineMarker
+        };
+    }
+
     function injectSheet(cssText) {
         var sheet = document.createElement('style');
         sheet.textContent = cssText;
@@ -219,8 +228,8 @@
         return sheet;
     }
 
-    function removeSheet(sheet) {
-        sheet.parentNode.removeChild(sheet);
+    function removeElem(elem) {
+        elem.parentNode.removeChild(elem);
     }
 
     function setElementAnimation(elem, name, timing) {
@@ -265,32 +274,44 @@
         // Record coords for future reference
         var tlx = timeline.getBoundingClientRect().left;
         var tlw = timeline.offsetWidth;
-        this._tlProps = {
+        this._dragProps = {
             timelineX: tlx,
             timelineW: tlw,
             timelineElem: timeline,
             onMove: onTimelineMousemove.bind(this),
             onUp: onTimelineMouseup.bind(this)
         };
+        this._dragMarkers = renderCurrentTimeMarker(this);
 
-        timeline.addEventListener('mousemove', this._tlProps.onMove, false);
-        document.addEventListener('mouseup', this._tlProps.onUp, false);
+        timeline.addEventListener('mousemove', this._dragProps.onMove, false);
+        document.addEventListener('mouseup', this._dragProps.onUp, false);
         document.addEventListener('selectstart', preventDefault, false);
-        this._tlProps.onMove(e);
+        this._dragProps.onMove(e);
     }
 
     function onTimelineMousemove(e) {
         var x = e.pageX;
-        var perc = (x - this._tlProps.timelineX) / this._tlProps.timelineW;
+        var perc = (x - this._dragProps.timelineX) / this._dragProps.timelineW;
         perc = Math.max(0, Math.min(1, perc));
+        var p100 = perc * 100;
+
+        var textMarker = this._dragMarkers.text;
+        textMarker.textContent = Math.round(p100) + '%';
+        textMarker.style.left = p100 + '%';
+        this._dragMarkers.line.style.left = p100 + '%';
+
         this.setStop(perc);
     }
 
-    function onTimelineMouseup(e) {
-        this._tlProps.timelineElem.removeEventListener('mousemove', this._tlProps.onMove, false);
-        document.removeEventListener('mouseup', this._tlProps.onUp, false);
+    function onTimelineMouseup() {
+        this._dragProps.timelineElem.removeEventListener('mousemove', this._dragProps.onMove, false);
+        document.removeEventListener('mouseup', this._dragProps.onUp, false);
         document.removeEventListener('selectstart', preventDefault, false);
-        delete this._tlProps;
+
+        removeElem(this._dragMarkers.text);
+        removeElem(this._dragMarkers.line);
+        delete this._dragProps;
+        delete this._dragMarkers;
     }
 
 
