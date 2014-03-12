@@ -11,15 +11,15 @@
     /*width: 150px;*/
 }
 .kfa-properties-list {
-    border: 0 dashed #ccc;
-    border-width: 1px 0 0 1px;
-    border-right: 1px solid #ccc;
+    border: 0 dashed #e5e5e5;
+    border-width: 1px 1px 0 1px;
+    border-right-style: solid;
     list-style: none;
     margin: 0;
     padding: 0;
 }
 .kfa-property-name {
-    border-bottom: 1px dashed #ccc;
+    border-bottom: 1px dashed #e5e5e5;
     box-sizing: border-box;
     height: 30px;
     line-height: 29px;
@@ -65,7 +65,7 @@
     width: 0;
 }
 .kfa-timeline-list {
-    border: 0 solid #ccc;
+    border: 0 solid #e5e5e5;
     border-width: 1px 1px 0 0;
     cursor: col-resize;
     list-style: none;
@@ -74,7 +74,7 @@
     position: relative;
 }
 .kfa-timeline-row {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #e5e5e5;
     box-sizing: border-box;
     height: 30px;
     line-height: 29px;
@@ -82,10 +82,13 @@
     position: relative;
 }
 .kfa-timeline-list .kfa-marker {
-    background-color: #f33;
+    background-color: #bbb;
     height: 100%;
     top: 0;
     width: 1px;
+}
+.kfa-marker.kfa-current-time {
+    background-color: #333;
 }
 .kfa-footer .kfa-marker::after {
     content: '';

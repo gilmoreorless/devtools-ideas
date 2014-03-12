@@ -213,12 +213,23 @@
     }
 
     function renderCurrentTimeMarker(kf) {
+        if (kf._dragMarkers) {
+            return kf._dragMarkers;
+        }
         var textMarker = put(kf.timelineFooter, 'span.kfa-marker');
-        var lineMarker = put(kf.timelineList, 'span.kfa-marker');
+        var lineMarker = put(kf.timelineList, 'span.kfa-marker.kfa-current-time');
         return {
             text: textMarker,
             line: lineMarker
         };
+    }
+
+    function removeCurrentTimeMarker(kf) {
+        if (kf._dragMarkers) {
+            removeElem(kf._dragMarkers.text);
+            removeElem(kf._dragMarkers.line);
+            delete kf._dragMarkers;
+        }
     }
 
     function injectSheet(cssText) {
@@ -261,6 +272,7 @@
     function onHeaderClick(e) {
         if (e.target.classList.contains('kfa-marker')) {
             var stop = e.target.dataset.stop;
+            removeCurrentTimeMarker(this);
             this.setStop(stop);
         }
     }
@@ -307,11 +319,7 @@
         this._dragProps.timelineElem.removeEventListener('mousemove', this._dragProps.onMove, false);
         document.removeEventListener('mouseup', this._dragProps.onUp, false);
         document.removeEventListener('selectstart', preventDefault, false);
-
-        removeElem(this._dragMarkers.text);
-        removeElem(this._dragMarkers.line);
         delete this._dragProps;
-        delete this._dragMarkers;
     }
 
 

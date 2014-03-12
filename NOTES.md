@@ -9,6 +9,7 @@
 ## Keyframes
 
 * Add in a callback system for `setStop` rather than directly manipulating the element
+* When selecting a position in the timeline, show the computed value of all referenced properties at that time
 * Show an indicative canvas or SVG element in the background of the timeline row of each property, to illustrate the change of value over time including easing
     * Length values (dimensions, text-indent, etc.): A simple area chart - although `calc()` may throw a spanner in the works
     * Colours/Opacity: Gradients
@@ -22,7 +23,8 @@
         * Weight: Area chart, discrete steps of 100 only (interpolated value is rounded to nearest 100)
         * Size, Stretch, Line height: Same as length values
     * `clip`: NFI, requires showing 4 values changing simultaneously
-    * (This requires manually calculating easing)
+    * (This requires manually calculating easing, or running through the computed styles at multiple % numbers to build a list of values)
+* Make it themeable
 
 ## Linear gradients
 
