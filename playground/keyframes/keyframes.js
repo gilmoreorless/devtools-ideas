@@ -24,6 +24,7 @@
         this.timelineFooter = put(this.timelineContainer, 'div.kfa-footer');
         this.updateElems = [];
         this._lastStop = null;
+        this._listeners = {};
 
         // Event listeners
         this.timelineHeader.addEventListener('click', onHeaderClick.bind(this), false);
@@ -64,6 +65,8 @@
         this.props.forEach(this._renderPropertyRow.bind(this));
 
         put(this.root, this.container);
+        this._clearTimelineValues();
+        this.showTimelineValues();
     };
 
     kfp.addUpdateElement = function (elem) {
@@ -104,6 +107,42 @@
         if (cleanAllElems) {
             this.updateElems.forEach(removeElementAnimation);
         }
+        // removeCurrentTimeMarker(this);
+    };
+
+
+    /*** Basic event handling ***/
+
+    kfp.on = function (eventName, listener) {
+        var l = this._listeners[eventName];
+        if (!l) {
+            l = this._listeners[eventName] = [];
+        }
+        l.push(listener);
+    };
+
+    kfp.off = function (eventName, listener) {
+        var l = this._listeners[eventName];
+        if (l) {
+            var idx = l.indexOf(listener);
+            if (idx > -1) {
+                l.splice(idx, 1);
+            }
+        }
+    };
+
+    kfp.trigger = function (eventName) {
+        var l = this._listeners[eventName];
+        if (!l) {
+            return;
+        }
+        l.forEach(function (listener) {
+            try {
+                listener(eventName, this);
+            } catch (e) {
+                console.error('Callback error when triggering %s event', eventName, e, listener);
+            }
+        }, this);
     };
 
 
@@ -240,7 +279,9 @@
     }
 
     function removeElem(elem) {
-        elem.parentNode.removeChild(elem);
+        if (elem.parentNode) {
+            elem.parentNode.removeChild(elem);
+        }
     }
 
     function setElementAnimation(elem, name, timing) {
@@ -320,6 +361,106 @@
         document.removeEventListener('mouseup', this._dragProps.onUp, false);
         document.removeEventListener('selectstart', preventDefault, false);
         delete this._dragProps;
+    }
+
+
+    /*** TESTING, THIS IS NOT STABLE ***/
+
+    kfp.showTimelineValues = function () {
+        if (!this._timelineValueNodes) {
+            var propValues = this.getTimelineValues();
+            this._timelineValueNodes = this.props.map(function (prop) {
+                if (!tlGraphs[prop.name]) {
+                    return;
+                }
+                var parent = this.timelineList.querySelector('[data-property=' + prop.name + ']');
+                var graph = put('canvas');
+                var style = getComputedStyle(parent);
+                graph.width = parseFloat(style.width);
+                graph.height = parseFloat(style.height);
+                put(parent, graph);
+                var values = propValues[prop.name];
+                tlGraphs[prop.name](graph, values);
+                return graph;
+            }, this);
+        }
+        this.timelineContainer.classList.add('kfa-show-timeline-values');
+    };
+
+    kfp.hideTimelineValues = function () {
+        this.timelineContainer.classList.remove('kfa-show-timeline-values');
+    };
+
+    kfp.getTimelineValues = function () {
+        var props = {};
+        var i = 0;
+        var prevStop = this._lastStop;
+        for (i; i <= 100; i++) {
+            this.setStop(i + '%');
+            // TODO: Hard-coded updateElems[0] is fragile
+            var style = getComputedStyle(this.updateElems[0]);
+            this.props.forEach(function (prop) {
+                if (!props[prop.name]) {
+                    props[prop.name] = [];
+                }
+                props[prop.name].push(style[prop.name]);
+            });
+        }
+        if (prevStop != null) {
+            this.setStop(prevStop);
+        }
+        return props;
+    };
+
+    kfp._clearTimelineValues = function () {
+        if (!this._timelineValueNodes) return;
+        // TODO: Make this less hacky
+        this._timelineValueNodes.forEach(function (node) {
+            removeElem(node);
+        });
+        this._timelineValueNodes = null;
+    };
+
+    var tlGraphs = {
+        color: function (canvas, values) {
+            var ctx = canvas.getContext('2d');
+            var w = canvas.width;
+            var h = canvas.height;
+            var wpart = w / (values.length - 1);
+            values.forEach(function (value, i) {
+                var wpi = wpart * i;
+                var gradient = ctx.createLinearGradient(wpi, 0, wpart * (i + 1), 0);
+                gradient.addColorStop(0, value);
+                gradient.addColorStop(1, values[i + 1] || values[i]);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(wpi, 0, wpart + 1, h);
+            });
+        },
+        width: function (canvas, values) {
+            var ctx = canvas.getContext('2d');
+            var w = canvas.width;
+            var h = canvas.height;
+            var wpart = w / (values.length - 1);
+            var floats = values.map(parseFloat);
+            var min = Math.min.apply(Math, floats);
+            var max = Math.max.apply(Math, floats);
+            var scale = max / h;
+            ctx.beginPath();
+            ctx.moveTo(0, h);
+            floats.forEach(function (value, i) {
+                var x = wpart * i;
+                var y = value / scale;
+                ctx.lineTo(x, h - y);
+            });
+            ctx.lineTo(w, h);
+            ctx.closePath();
+
+            var gradient = ctx.createLinearGradient(0, 0, 0, h);
+            gradient.addColorStop(0, '#ccc');
+            gradient.addColorStop(1, '#999');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+        }
     }
 
 
