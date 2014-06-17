@@ -15,6 +15,7 @@ function getAppliedValue(defs, prop, defaultValue) {
 }
 
 function update() {
+	/* jshint evil:true */
 	chrome.devtools.inspectedWindow.eval('getStylesAndRules($0)', {useContentScriptContext: true}, function (result) {
 		var transform = getAppliedValue(result, 'webkitTransform', 'none');
 		var origin = getAppliedValue(result, 'webkitTransformOrigin', '50% 50%');
@@ -49,4 +50,10 @@ bgPage.postMessage({
 	tabId: chrome.devtools.inspectedWindow.tabId,
 	from: 'sidebar'
 });
+
+function setElemTransform(trans) {
+	/* jshint evil:true */
+	chrome.devtools.inspectedWindow.eval('$0.style.webkitTransform = "' + trans + '"',
+	                                     {useContentScriptContext: true}, update);
+}
 

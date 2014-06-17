@@ -4,7 +4,8 @@
 
 * Edit mode
 	* Add/edit rotation/skew/scale
-	* Edit individual parts of
+	* Edit individual parts of the value
+    * Interact with the element directly
 
 ## Keyframes
 

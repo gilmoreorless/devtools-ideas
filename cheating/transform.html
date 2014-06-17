@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8">
+    <title>Cheating: 2D transforms</title>
+    <link rel="stylesheet" href="faker/fake-chrome.css">
+    <link rel="stylesheet" href="../chrome-extension/tools/transform/sidebar.css">
+    <link rel="stylesheet" href="transform.css">
+</head>
+<body>
+    <div class="fake-window">
+        <div class="fake-page">
+
+<!-- PAGE CONTENT GOES HERE -->
+<p id="ref" class="demo">Transform me!</p>
+
+        </div>
+        <div class="fake-devtools">
+            <div class="fake-devtools-header">
+                <div class="fake-devtools-header-tabs">
+                    <div class="fake-devtools-header-tabs-content"></div>
+                </div>
+                <div class="fake-devtools-header-actions"></div>
+            </div>
+            <div class="fake-devtools-content">
+                <div class="fake-devtools-elements"></div>
+                <div class="fake-devtools-panel">
+                    <div class="fake-devtools-panel-header"></div>
+                    <div class="fake-devtools-panel-content">
+
+<!-- DEVTOOLS CONTENT GOES HERE -->
+<div class="styles-section computed-style expanded" id="transform2d">
+    <h4>Transforms</h4>
+    <ul class="trans-actions">
+        <li class="trans-action" data-action="rotate">Rotate</li>
+        <li class="trans-action" data-action="scale">Scale</li>
+        <li class="trans-action" data-action="skew">Skew</li>
+        <li class="trans-action" data-action="translate">Translate</li>
+    </ul>
+    <div class="trans-container">
+        <div class="trans trans-base">
+            <span class="arrow"></span>
+            <span class="origin"></span>
+        </div>
+        <div class="trans trans-elem">
+            <span class="arrow"></span>
+            <span class="top">TL</span>
+        </div>
+    </div>
+    <div class="relevant-properties">
+        <ul class="properties properties-tree monospace">
+            <li id="t2d-prop-transform">
+                <span class="webkit-css-property">-webkit-transform</span>:
+                <span class="value"></span>;
+            </li>
+            <li id="t2d-prop-transform-origin">
+                <span class="webkit-css-property">-webkit-transform-origin</span>:
+                <span class="value"></span>;
+            </li>
+        </ul>
+    </div>
+</div>
+<script src="transform-builder.js"></script>
+<script src="transform.js"></script>
+<!-- <script src="../chrome-extension/tools/transform/manip/tmp-skew.js"></script> -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

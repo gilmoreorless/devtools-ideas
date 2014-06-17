@@ -1,0 +1,21 @@
+.fake-page {
+    height: 15em;
+}
+.fake-devtools-panel {
+    width: 350px;
+}
+.demo {
+    background: #D8F0B5;
+    border-radius: .75em;
+    float: right;
+    margin: 5em 5em 0 0;
+    padding: 1em;
+    font-size: 14px;
+    text-align: left;
+    /* width: 10em; */
+}
+#transform2d[data-mode=rotate] { cursor: alias; } /* TODO: Image */
+#transform2d[data-mode=scale] { cursor: move; }
+#transform2d[data-mode=skew] { cursor: ew-resize; }
+#transform2d[data-mode=translate] { cursor: -webkit-grab; cursor: grab; }
+#transform2d[data-mode=translate].dragging { cursor: -webkit-grabbing; cursor: grabbing; }
