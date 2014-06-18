@@ -24,7 +24,7 @@
     var curTransObj = new TransformBuilder();
     var curOrigin = '50% 50%';
     var curMode = '';
-    var curPartIdx;
+    var curPartIdx = -1;
     var dragStart = null;
     var units = 'deg';
     // Mousemove normalisers
@@ -42,6 +42,7 @@
                 cheat.setMode(mode);
             }
         }, false);
+        propTrans.addEventListener('click', transPartSelected, false);
         transRoot.addEventListener('mousedown', actionMousedown, false);
     }
 
@@ -51,24 +52,35 @@
         });
     }
 
+    function doNothing(e) {
+        e.preventDefault();
+    }
+
     function actionMousedown(e) {
-        if (e.target.classList.contains('trans-action')) {
+        if (!curMode || e.target.classList.contains('trans-action') || e.target.classList.contains('trans-part')) {
             return;
         }
         dragStart = {
             x: e.pageX,
             y: e.pageY,
+            originBounds: transOrigin.getBoundingClientRect(),
             values: [],
             isNewPart: false
         };
-        var lastPart = curTransObj.getLastPart();
-        if (!lastPart || lastPart.type !== curMode) {
-            lastPart = curTransObj.addPart(curMode);
-            dragStart.isNewPart = true;
+        var part;
+        if (curPartIdx > -1) {
+            part = curTransObj.getPart(curPartIdx);
+        } else {
+            part = curTransObj.getLastPart();
+            if (!part || part.type !== curMode) {
+                part = curTransObj.addPart(curMode);
+                dragStart.isNewPart = true;
+            }
+            curPartIdx = curTransObj.parts.length - 1;
         }
-        curPartIdx = curTransObj.parts.length - 1;
-        dragStart.values = [].concat(lastPart.values); // Make sure it's a clone and not a reference
+        dragStart.values = [].concat(part.values); // Make sure it's a clone and not a reference
 
+        document.addEventListener('selectstart', doNothing, false);
         document.addEventListener('mousemove', actionMousemove, false);
         document.addEventListener('mouseup', actionMouseup, false);
         transRoot.classList.add('dragging');
@@ -83,8 +95,6 @@
             var y = e.pageY;
             var dx = x - dragStart.x;
             var dy = y - dragStart.y;
-            // var transform = dragHandlers[curMode].call(this, e, dx, dy);
-            // cheat.setTransform(transform);
             curTransObj.setPart(curPartIdx, dragHandlers[curMode].call(this, e, dx, dy));
             cheat.refresh();
         }
@@ -95,6 +105,8 @@
             curTransObj.popPart();
         }
         dragStart = null;
+        curPartIdx = -1;
+        document.removeEventListener('selectstart', doNothing, false);
         document.removeEventListener('mousemove', actionMousemove, false);
         document.removeEventListener('mouseup', actionMouseup, false);
         transRoot.classList.remove('dragging');
@@ -102,8 +114,11 @@
     }
 
     var dragHandlers = {
-        rotate: function (e, dx, dy) {
-            // console.log(dx, dy, Math.sin(dx), Math.cos(dy), );
+        rotate: function (e) {
+            var ox = dragStart.originBounds.left + dragStart.originBounds.width / 2;
+            var oy = dragStart.originBounds.top + dragStart.originBounds.height / 2;
+            var dx = e.pageX - ox;
+            var dy = e.pageY - oy;
             var rad = -Math.atan2(-dx, -dy);
             var angle = Math.round(rad * 180 / Math.PI % 360);
             return [angle + units];
@@ -113,6 +128,7 @@
             var absy = Math.abs(dy);
             var dist = absx > absy ? dx : -dy;
             var scale = dist / pxPerScale + (parseFloat(dragStart.values[0]) || 1);
+            scale = Math.round(scale * 100) / 100;
             return [scale];
         },
         skew: function (e, dx, dy) {
@@ -126,6 +142,39 @@
         }
     };
 
+    function outputTransformPartNodes() {
+        var parts = curTransObj.parts;
+        var nodes = [];
+        if (parts.length) {
+            nodes = parts.map(function (part, i) {
+                var str = '<span class="trans-part' +
+                    (i === curPartIdx ? ' selected' : '') +
+                    '"' +
+                    ' data-index="' + i + '"' +
+                    ' data-type="' + part.type + '"' +
+                    '>' + TransformBuilder.partToString(part) +
+                    '</span>';
+                return str;
+            });
+        } else {
+            nodes.push(
+               '<span class="trans-part-read-only">' +
+               curTransObj.toString() + '</span>');
+        }
+        propTrans.innerHTML = nodes.join(' ');
+    }
+
+    function transPartSelected(e) {
+        var index = e.target.getAttribute('data-index');
+        if (index == null) {
+            return;
+        }
+        var type = e.target.getAttribute('data-type');
+        curPartIdx = +index;
+        cheat.setMode(type);
+        e.target.classList.add('selected');
+    }
+
 
     // PUBLIC METHODS
 
@@ -138,8 +187,8 @@
         var xy = curOrigin.split(' ');
         transOrigin.style.left = xy[0];
         transOrigin.style.top = xy[1];
-        propTrans.textContent = curTrans;
-        propOrigin.textContent = curOrigin;
+        propOrigin.innerHTML = '<span class="trans-part-read-only">' + curOrigin + '</span>';
+        outputTransformPartNodes();
     };
 
     cheat.setTransform = function (transform) {

@@ -4,6 +4,10 @@
         this.parts = [];
     };
 
+    TB.partToString = function (part) {
+        return part.type + '(' + part.values.join(', ') + ')';
+    };
+
     TB.prototype.addPart = function (type, values) {
         var part = {
             type: type,
@@ -51,9 +55,7 @@
     };
 
     TB.prototype.getPartStrings = function () {
-        return this.parts.map(function (part) {
-            return part.type + '(' + part.values.join(', ') + ')';
-        });
+        return this.parts.map(TB.partToString);
     };
 
     TB.prototype.toString = function () {
