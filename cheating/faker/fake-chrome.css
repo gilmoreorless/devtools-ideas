@@ -55,4 +55,5 @@ body {
 }
 .fake-devtools-panel-content {
     min-height: 6em;
+    padding-bottom: 1em;
 }

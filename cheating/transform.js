@@ -2,10 +2,20 @@
 
     var cheat = root.cheat = {};
 
+    /*******\
+    | SETUP |------------------------------------------------------------------------------------------------------
+    \*******/
+
+    // PUBLIC OPTIONS
+
+    cheat.shouldShowGuides = true;
+
+
     // DOM NODES
 
     var ref = document.querySelector('#ref');
     var transRoot = document.querySelector('#transform2d');
+    var transContainer = document.querySelector('.trans-container');
     var transBase = document.querySelector('.trans-base');
     var transDisplay = document.querySelector('.trans-elem');
     var transOrigin = transBase.querySelector('.origin');
@@ -16,23 +26,34 @@
     ['rotate', 'scale', 'skew', 'translate'].forEach(function (trans) {
         btn[trans] = btnsContainer.querySelector('[data-action=' + trans + ']');
     });
+    var guidesParent = document.createElement('div');
+    guidesParent.className = 'trans-action-guides-container';
 
 
-    // STATE
-
-    var curTrans = 'none';
-    var curTransObj = new TransformBuilder();
-    var curOrigin = '50% 50%';
-    var curMode = '';
-    var curPartIdx = -1;
-    var dragStart = null;
+    // PARAMETERS
     var units = 'deg';
     // Mousemove normalisers
     var pxPerSkew = 2;
     var pxPerScale = 50;
 
 
-    // PRIVATE METHODS
+    // STATE
+
+    var curTransObj = new TransformBuilder();
+    var curOrigin = '50% 50%';
+    var curMode = '';
+    var curPartIdx = -1;
+    var curAxis = '';
+    var dragStart = null;
+    var axisBounds;
+
+
+
+    /*****************\
+    | PRIVATE METHODS |-------------------------------------------------------------------------------------------
+    \*****************/
+
+    // UTILS
 
     function setup() {
         btnsContainer.addEventListener('click', function (e) {
@@ -43,7 +64,8 @@
             }
         }, false);
         propTrans.addEventListener('click', transPartSelected, false);
-        transRoot.addEventListener('mousedown', actionMousedown, false);
+        transContainer.addEventListener('mousedown', actionMousedown, false);
+        transContainer.addEventListener('mousemove', pickAxis, false);
     }
 
     function eachAction(callback) {
@@ -56,14 +78,28 @@
         e.preventDefault();
     }
 
+    function getBounds(elem) {
+        var rect = elem.getBoundingClientRect();
+        var bounds = {};
+        var extra = {left: window.scrollX, top: window.scrollY};
+        Object.keys(rect).forEach(function (key) {
+            bounds[key] = rect[key] + (extra[key] || 0);
+        });
+        return bounds;
+    }
+
+
+
+    // DRAG HANDLERS
+
     function actionMousedown(e) {
-        if (!curMode || e.target.classList.contains('trans-action') || e.target.classList.contains('trans-part')) {
+        if (!curMode) {
             return;
         }
         dragStart = {
             x: e.pageX,
             y: e.pageY,
-            originBounds: transOrigin.getBoundingClientRect(),
+            originBounds: getBounds(transOrigin),
             values: [],
             isNewPart: false
         };
@@ -124,16 +160,37 @@
             return [angle + units];
         },
         scale: function (e, dx, dy) {
+            function round(num) {
+                return Math.round(num * 100) / 100;
+            }
+            var scaleX = parseFloat(dragStart.values[0]) || 1;
+            var scaleY = parseFloat(dragStart.values[1]) || scaleX;
             var absx = Math.abs(dx);
             var absy = Math.abs(dy);
-            var dist = absx > absy ? dx : -dy;
-            var scale = dist / pxPerScale + (parseFloat(dragStart.values[0]) || 1);
-            scale = Math.round(scale * 100) / 100;
-            return [scale];
+            var values;
+            if (!curAxis) {
+                var dist = absx > absy ? dx : -dy;
+                scaleX = round(scaleX + dist / pxPerScale);
+                values = [scaleX];
+            } else {
+                if (curAxis === 'x') {
+                    scaleX = round(scaleX + dx / pxPerScale);
+                } else if (curAxis === 'y') {
+                    scaleY = round(scaleY - dy / pxPerScale);
+                }
+                values = [scaleX, scaleY];
+            }
+            return values;
         },
         skew: function (e, dx, dy) {
-            var skewX = Math.round(-dx / pxPerSkew) + (parseFloat(dragStart.values[0]) || 0);
-            return [skewX + units, 0];
+            var skewX = parseFloat(dragStart.values[0]) || 0;
+            var skewY = parseFloat(dragStart.values[1]) || 0;
+            if (curAxis === 'x') {
+                skewX += Math.round(-dx / pxPerSkew);
+            } else if (curAxis === 'y') {
+                skewY += Math.round(-dy / pxPerSkew);
+            }
+            return [skewX + units, skewY + units];
         },
         translate: function (e, dx, dy) {
             dx += parseFloat(dragStart.values[0]) || 0;
@@ -142,26 +199,121 @@
         }
     };
 
+
+
+    // INTERACTIVE GUIDES
+
+    function showGuides(elem) {
+        if (!cheat.shouldShowGuides) {
+            return;
+        }
+        var method = guideDisplays[curMode];
+        if (method) {
+            guidesParent.innerHTML = '';
+            transRoot.appendChild(guidesParent);
+            method.call(this, guidesParent, elem);
+            setupAxisBounds();
+        }
+    }
+
+    function hideGuides() {
+        transRoot.removeChild(guidesParent);
+    }
+
+    function setupAxisBounds() {
+        var box = getBounds(guidesParent);
+        var halfX = box.left + box.width / 2;
+        var halfY = box.top + box.height / 2;
+        var minWH = Math.min(box.width, box.height);
+        var min2 = minWH / 2;
+        axisBounds = {
+            left:   halfX - min2,
+            right:  halfX + min2,
+            top:    halfY - min2,
+            bottom: halfY + min2,
+            width:  minWH,
+            height: minWH
+        };
+        transRoot.removeAttribute('data-axis');
+        return axisBounds;
+    }
+
+    var axisProximity = 20;
+    function pickAxis(e) {
+        if (dragStart || !guideDisplays[curMode] || !guideDisplays[curMode].pickAxis) {
+            return;
+        }
+        var x = e.pageX, y = e.pageY;
+        var distX = Math.min(Math.abs(x - axisBounds.right), Math.abs(y - axisBounds.top));
+        var distY = Math.min(Math.abs(x - axisBounds.left), Math.abs(y - axisBounds.bottom));
+        var minDist = Math.min(distX, distY);
+        var oldAxis = curAxis;
+        curAxis = minDist > axisProximity ?
+            '' :
+            distX < distY ? 'x' : 'y';
+        if (curAxis !== oldAxis) {
+            transRoot.setAttribute('data-axis', curAxis);
+        }
+    }
+
+    var guideDisplays = {
+        rotate: function (parent, elem) {
+            var padding = 10;
+            var box = getBounds(elem);
+            var w = box.width / 2;
+            var h = box.height / 2;
+            var radius = Math.sqrt(w * w + h * h) + padding;
+            var main = put('div.trans-agrotate');
+            main.style.width = main.style.height = (radius * 2) + 'px';
+            put(parent, main);
+            var mainBounds = getBounds(main);
+            parent.style.left = (box.left + (box.width / 2) - (mainBounds.width / 2)) + 'px';
+            parent.style.top = (box.top + (box.height / 2) - (mainBounds.height / 2)) + 'px';
+        },
+        // scale: function (parent, elem) {
+
+        // },
+        skew: function (parent, elem) {
+            var padding = 25;
+            var box = getBounds(elem);
+            var main = put('div.trans-agskew');
+            parent.style.left = (box.left - padding) + 'px';
+            parent.style.top = (box.top - padding) + 'px';
+            main.style.width = (box.width + padding * 2) + 'px';
+            main.style.height = (box.height + padding * 2) + 'px';
+            put(main, 'div.trans-agskew-axis.axis-x');
+            put(main, 'div.trans-agskew-axis.axis-y');
+            put(parent, main);
+        },
+        translate: function (parent, elem) {
+
+        }
+    };
+    guideDisplays.scale = guideDisplays.skew;
+    guideDisplays.skew.pickAxis = guideDisplays.scale.pickAxis = true;
+
+
+
+    // PROPERTY VALUES
+
     function outputTransformPartNodes() {
         var parts = curTransObj.parts;
         var nodes = [];
         if (parts.length) {
             nodes = parts.map(function (part, i) {
-                var str = '<span class="trans-part' +
-                    (i === curPartIdx ? ' selected' : '') +
-                    '"' +
-                    ' data-index="' + i + '"' +
-                    ' data-type="' + part.type + '"' +
-                    '>' + TransformBuilder.partToString(part) +
-                    '</span>';
-                return str;
+                var node = put('span.trans-part[data-index=$][data-type=$]',
+                               i, part.type,
+                               TransformBuilder.partToString(part));
+                if (i === curPartIdx) {
+                    put(node, '.selected');
+                }
+                return node;
             });
         } else {
-            nodes.push(
-               '<span class="trans-part-read-only">' +
-               curTransObj.toString() + '</span>');
+            nodes = [put('span.trans-part-read-only', curTransObj.toString())];
         }
-        propTrans.innerHTML = nodes.join(' ');
+        propTrans.innerHTML = '';
+        put(propTrans, nodes);
     }
 
     function transPartSelected(e) {
@@ -176,7 +328,10 @@
     }
 
 
-    // PUBLIC METHODS
+
+    /****************\
+    | PUBLIC METHODS |--------------------------------------------------------------------------------------------
+    \****************/
 
     cheat.refresh = function () {
         var curTrans = curTransObj + '';
@@ -191,10 +346,12 @@
         outputTransformPartNodes();
     };
 
+    /*
     cheat.setTransform = function (transform) {
         curTrans = transform;
         cheat.refresh();
     };
+    */
 
     cheat.setOrigin = function (origin) {
         curOrigin = origin;
@@ -211,6 +368,11 @@
             btn.classList[add ? 'add' : 'remove']('selected');
         });
         transRoot.setAttribute('data-mode', mode);
+        if (mode) {
+            showGuides(transDisplay);
+        } else {
+            hideGuides();
+        }
     };
 
 

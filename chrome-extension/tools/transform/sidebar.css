@@ -176,6 +176,7 @@ h4 {
     position: absolute;
     left: 16px
 }
+/*
 .trans .arrow {
     display: block;
     width: 3px;
@@ -196,6 +197,30 @@ h4 {
     position: absolute;
     top: -11px;
     left: -5px;
+}
+*/
+.trans .arrow {
+    display: block;
+    width: 0;
+    height: 0;
+    border: solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.3);
+    border-width: 25px 6px 0 6px;
+    position: absolute;
+    left: 19px;
+    bottom: 25px;
+}
+.trans .arrow:after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border: solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.5);
+    border-width: 0 6px 11px 6px;
+    position: absolute;
+    top: -37px;
+    left: -6px;
 }
 .trans .origin {
     position: absolute;
@@ -226,7 +251,7 @@ h4 {
     margin: 0 -2px;
 }
 .trans-part + .trans-part {
-    margin-left: -4px;
+    margin-left: -3px;
 }
 .trans-part:hover,
 .trans-part.selected {
@@ -236,4 +261,66 @@ h4 {
     background: rgba(0, 0, 0, 0.4);
     color: white;
     text-shadow: rgba(0, 0, 0, 0.4) 0 1px 0;
+}
+
+.trans-action-guides-container {
+    color: rgba(0,0,0,0.1);
+    pointer-events: none;
+    position: absolute;
+}
+.trans-agrotate {
+    border: 6px solid;
+    border-radius: 50%;
+}
+.trans-agskew {
+    position: relative;
+}
+.trans-agskew-axis {
+    border: 1px solid;
+    box-sizing: border-box;
+    position: absolute;
+}
+.trans-agskew-axis.axis-x {
+    width: 80%;
+    height: 6px;
+    top: 0;
+    left: 10%;
+}
+.trans-agskew-axis.axis-y {
+    width: 6px;
+    height: 80%;
+    top: 10%;
+    left: 0;
+}
+[data-axis=x]:hover .trans-agskew-axis.axis-x,
+[data-axis=y]:hover .trans-agskew-axis.axis-y {
+    color: rgba(0,33,0,0.3);
+}
+.trans-agskew-axis:before,
+.trans-agskew-axis:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 3px solid transparent;
+}
+.trans-agskew-axis.axis-x:before {
+    border-right-color: currentColor;
+    left: -7px;
+    top: -1px
+}
+.trans-agskew-axis.axis-x:after {
+    border-left-color: currentColor;
+    right: -7px;
+    top: -1px;
+}
+.trans-agskew-axis.axis-y:before {
+    border-bottom-color: currentColor;
+    top: -7px;
+    left: -1px;
+}
+.trans-agskew-axis.axis-y:after {
+    border-top-color: currentColor;
+    bottom: -7px;
+    left: -1px;
 }
