@@ -44,6 +44,7 @@
     var curMode = '';
     var curPartIdx = -1;
     var curAxis = '';
+    var curGuide;
     var dragStart = null;
     var axisBounds;
 
@@ -131,8 +132,10 @@
             var y = e.pageY;
             var dx = x - dragStart.x;
             var dy = y - dragStart.y;
-            curTransObj.setPart(curPartIdx, dragHandlers[curMode].call(this, e, dx, dy));
+            var values = dragHandlers[curMode].call(this, e, dx, dy);
+            curTransObj.setPart(curPartIdx, values);
             cheat.refresh();
+            updateGuides(curTransObj.getPart(curPartIdx));
         }
     }
 
@@ -207,17 +210,28 @@
         if (!cheat.shouldShowGuides) {
             return;
         }
-        var method = guideDisplays[curMode];
-        if (method) {
+        var guide = guideDisplays[curMode];
+        if (guide) {
             guidesParent.innerHTML = '';
             transRoot.appendChild(guidesParent);
-            method.call(this, guidesParent, elem);
+            curGuide = guide.call(this, guidesParent, elem);
             setupAxisBounds();
         }
     }
 
     function hideGuides() {
         transRoot.removeChild(guidesParent);
+        curGuide = null;
+    }
+
+    function updateGuides(part) {
+        if (!curGuide) {
+            return;
+        }
+        var guide = guideDisplays[curMode];
+        if (guide && guide.update) {
+            guide.update(part);
+        }
     }
 
     function setupAxisBounds() {
@@ -265,10 +279,12 @@
             var radius = Math.sqrt(w * w + h * h) + padding;
             var main = put('div.trans-agrotate');
             main.style.width = main.style.height = (radius * 2) + 'px';
+            put(main, 'div.trans-agrotate-control');
             put(parent, main);
             var mainBounds = getBounds(main);
             parent.style.left = (box.left + (box.width / 2) - (mainBounds.width / 2)) + 'px';
             parent.style.top = (box.top + (box.height / 2) - (mainBounds.height / 2)) + 'px';
+            return main;
         },
         // scale: function (parent, elem) {
 
@@ -284,14 +300,30 @@
             put(main, 'div.trans-agskew-axis.axis-x');
             put(main, 'div.trans-agskew-axis.axis-y');
             put(parent, main);
+            return main;
         },
         translate: function (parent, elem) {
-
+            return;
+            var padding = 10;
+            var box = getBounds(elem);
+            var main = put('div.trans-agtranslate');
+            parent.style.left = (box.left - padding) + 'px';
+            parent.style.top = (box.top - padding) + 'px';
+            main.style.width = (box.width + padding * 2) + 'px';
+            main.style.height = (box.height + padding * 2) + 'px';
+            ['top', 'right', 'bottom', 'left'].forEach(function (dir) {
+                put(main, 'div.trans-agtranslate-arrow.arrow-' + dir);
+            });
+            put(parent, main);
+            return main;
         }
     };
     guideDisplays.scale = guideDisplays.skew;
     guideDisplays.skew.pickAxis = guideDisplays.scale.pickAxis = true;
 
+    guideDisplays.rotate.update = function (part) {
+        curGuide.style.webkitTransform = TransformBuilder.partToString(part);
+    };
 
 
     // PROPERTY VALUES
@@ -324,6 +356,7 @@
         var type = e.target.getAttribute('data-type');
         curPartIdx = +index;
         cheat.setMode(type);
+        updateGuides(curTransObj.getPart(curPartIdx));
         e.target.classList.add('selected');
     }
 
@@ -334,7 +367,7 @@
     \****************/
 
     cheat.refresh = function () {
-        var curTrans = curTransObj + '';
+        var curTrans = curTransObj.toString();
         ref.style.webkitTransform = curTrans;
         ref.style.webkitTransformOrigin = curOrigin;
         transDisplay.style.webkitTransform = curTrans;
