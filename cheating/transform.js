@@ -27,7 +27,8 @@
         btn[trans] = btnsContainer.querySelector('[data-action=' + trans + ']');
     });
     var guidesParent = document.createElement('div');
-    guidesParent.className = 'trans-action-guides-container';
+    var guidesElemParent = document.createElement('div');
+    guidesParent.className = guidesElemParent.className = 'trans-action-guides-container';
 
 
     // PARAMETERS
@@ -45,8 +46,10 @@
     var curPartIdx = -1;
     var curAxis = '';
     var curGuide;
+    var curElemGuide;
     var dragStart = null;
-    var axisBounds;
+    var axisBounds = {};
+    var axisElemBounds = {};
 
 
 
@@ -57,6 +60,9 @@
     // UTILS
 
     function setup() {
+        transRoot.appendChild(guidesParent);
+        document.body.appendChild(guidesElemParent);
+
         btnsContainer.addEventListener('click', function (e) {
             var action = e.target.getAttribute('data-action');
             if (action) {
@@ -77,6 +83,13 @@
 
     function doNothing(e) {
         e.preventDefault();
+    }
+
+    function extend(o, n) {
+        Object.keys(n).forEach(function (key) {
+            o[key] = n[key];
+        });
+        return o;
     }
 
     function getBounds(elem) {
@@ -206,50 +219,63 @@
 
     // INTERACTIVE GUIDES
 
-    function showGuides(elem) {
+    function showGuides() {
+        curGuide = showGuide(guidesParent, transDisplay, axisBounds);
+        curElemGuide = showGuide(guidesElemParent, ref, axisElemBounds);
+    }
+
+    function showGuide(parent, elem, bounds) {
         if (!cheat.shouldShowGuides) {
             return;
         }
         var guide = guideDisplays[curMode];
+        var result;
         if (guide) {
-            guidesParent.innerHTML = '';
-            transRoot.appendChild(guidesParent);
-            curGuide = guide.call(this, guidesParent, elem);
-            setupAxisBounds();
+            parent.innerHTML = '';
+            result = guide.call(this, parent, elem);
+            setupAxisBounds(parent, bounds);
         }
+        return result;
     }
 
     function hideGuides() {
-        transRoot.removeChild(guidesParent);
+        hideGuide(curGuide);
+        hideGuide(curElemGuide);
         curGuide = null;
+        curElemGuide = null;
+    }
+
+    function hideGuide(guide) {
+        guide && guide.remove();
     }
 
     function updateGuides(part) {
-        if (!curGuide) {
+        if (!curGuide && !curElemGuide) {
             return;
         }
         var guide = guideDisplays[curMode];
         if (guide && guide.update) {
-            guide.update(part);
+            curGuide && guide.update(curGuide, part);
+            curElemGuide && guide.update(curElemGuide, part);
         }
     }
 
-    function setupAxisBounds() {
-        var box = getBounds(guidesParent);
+    function setupAxisBounds(parent, globalBounds) {
+        var box = getBounds(parent);
         var halfX = box.left + box.width / 2;
         var halfY = box.top + box.height / 2;
         var minWH = Math.min(box.width, box.height);
         var min2 = minWH / 2;
-        axisBounds = {
+        extend(globalBounds, {
             left:   halfX - min2,
             right:  halfX + min2,
             top:    halfY - min2,
             bottom: halfY + min2,
             width:  minWH,
             height: minWH
-        };
+        });
         transRoot.removeAttribute('data-axis');
-        return axisBounds;
+        return globalBounds;
     }
 
     var axisProximity = 20;
@@ -321,8 +347,8 @@
     guideDisplays.scale = guideDisplays.skew;
     guideDisplays.skew.pickAxis = guideDisplays.scale.pickAxis = true;
 
-    guideDisplays.rotate.update = function (part) {
-        curGuide.style.webkitTransform = TransformBuilder.partToString(part);
+    guideDisplays.rotate.update = function (guide, part) {
+        guide.style.webkitTransform = TransformBuilder.partToString(part);
     };
 
 
@@ -402,10 +428,11 @@
         });
         transRoot.setAttribute('data-mode', mode);
         if (mode) {
-            showGuides(transDisplay);
+            showGuides();
         } else {
             hideGuides();
         }
+        cheat.refresh();
     };
 
 
