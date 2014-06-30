@@ -1,18 +1,7 @@
-body {
-    margin: 0;
-}
-.fake-window {
-    width: 60%;
-}
-.fake-page {
-    min-height: 6em;
-    overflow: auto;
-    text-align: right;
-}
-.fake-devtools {
+.fake-chrome .fake-devtools {
     border-top: 1px solid #a3a3a3;
 }
-.fake-devtools-header {
+.fake-chrome .fake-devtools-header {
     background-color: #e6e6e6;
     border-bottom: 1px solid #a3a3a3;
     display: table;
@@ -20,40 +9,43 @@ body {
     table-layout: fixed;
     width: 100%;
 }
-.fake-devtools-header-tabs {
+.fake-chrome .fake-devtools-header-tabs {
     display: table-cell;
 }
-.fake-devtools-header-tabs-content {
+.fake-chrome .fake-devtools-header-tabs-content {
     background: url(img/blink-top-tabs.png) no-repeat 100% 0;
     height: 22px;
     max-width: 500px;
 }
-.fake-devtools-header-actions {
+.fake-chrome .fake-devtools-header-actions {
     background: url(img/blink-top-actions.png) no-repeat 100% 0;
     display: table-cell;
     height: 22px;
     width: 108px;
 }
-.fake-devtools-content {
+.fake-chrome .fake-devtools-content {
     display: table;
     width: 100%;
 }
-.fake-devtools-elements {
+.fake-chrome .fake-devtools-elements {
     background: #fff url(img/blink-elements.png) 100% 0;
     border-right: 1px solid #a3a3a3;
     display: table-cell;
 }
-.fake-devtools-panel {
+.fake-chrome .fake-devtools-panel {
     display: table-cell;
     min-width: 300px;
     width: 300px;
 }
-.fake-devtools-panel-header {
+.fake-chrome .fake-devtools-panel-header {
     background: #ececec url(img/blink-side-panel-tabs.png) no-repeat;
     border-bottom: 1px solid #cacaca;
     height: 22px;
 }
-.fake-devtools-panel-content {
+.fake-chrome .fake-devtools-panel-tabs {
+    display: none;
+}
+.fake-chrome .fake-devtools-panel-content {
     min-height: 6em;
     padding-bottom: 1em;
 }

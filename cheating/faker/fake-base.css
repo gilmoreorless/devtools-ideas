@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+}
+.fake-window {
+    width: 80%;
+}
+.fake-page {
+    min-height: 6em;
+    overflow: auto;
+    text-align: right;
+}
+.fake-switcher {
+    border-width: 1px 0 1px 1px;
+    border-style: solid;
+    border-color: #699;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 45%;
+}
+.fake-switcher a {
+    background-color: #eff;
+    color: #336;
+    display: block;
+    text-decoration: none;
+    padding: .5em 1em .5em 2em;
+    position: relative;
+}
+.fake-switcher li {
+    border-top: 1px solid #9cc;
+}
+.fake-switcher li:first-child {
+    border-top: none;
+}
+.fake-switcher a:hover {
+    background-color: #dff;
+}
+.fake-switcher .selected a::before {
+    content: '✔︎';
+    color: #396;
+    position: absolute;
+    left: 0.7em;
+}

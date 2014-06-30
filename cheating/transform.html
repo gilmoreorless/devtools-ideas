@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf8">
     <title>Cheating: 2D transforms</title>
+    <link rel="stylesheet" href="faker/fake-base.css">
     <link rel="stylesheet" href="faker/fake-chrome.css">
+    <link rel="stylesheet" href="faker/fake-firefox.css">
+    <link rel="stylesheet" href="faker/fake-firefox-dark.css">
     <link rel="stylesheet" href="../chrome-extension/tools/transform/sidebar.css">
     <link rel="stylesheet" href="transform.css">
 </head>
@@ -23,9 +26,19 @@
                 <div class="fake-devtools-header-actions"></div>
             </div>
             <div class="fake-devtools-content">
-                <div class="fake-devtools-elements"></div>
+                <div class="fake-devtools-elements">
+                    <div class="fake-devtools-elements-header"><span class="fake-devtools-search"></span></div>
+                    <div class="fake-devtools-elements-content"></div>
+                </div>
                 <div class="fake-devtools-panel">
-                    <div class="fake-devtools-panel-header"></div>
+                    <div class="fake-devtools-panel-header">
+                        <ul class="fake-devtools-panel-tabs">
+                            <li>Rules</li>
+                            <li>Computed</li>
+                            <li class="selected">Sneetches</li>
+                            <li>Box Model</li>
+                        </ul>
+                    </div>
                     <div class="fake-devtools-panel-content">
 
 <!-- DEVTOOLS CONTENT GOES HERE -->
@@ -61,9 +74,9 @@
     </div>
 </div>
 <script src="../playground/lib/put.js"></script>
+<script src="faker/fake-switcher.js"></script>
 <script src="transform-builder.js"></script>
 <script src="transform.js"></script>
-<!-- <script src="../chrome-extension/tools/transform/manip/tmp-skew.js"></script> -->
 
                     </div>
                 </div>

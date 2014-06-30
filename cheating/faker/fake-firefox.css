@@ -1,0 +1,103 @@
+.fake-ff .fake-devtools {
+    border-top: 1px solid #b3b3b3;
+}
+.fake-ff .fake-devtools-header {
+    background: #ebeced url(img/ff-light-top-bg.png) repeat-x;
+    border-bottom: 1px solid #b3b3b3;
+    display: table;
+    height: 28px;
+    table-layout: fixed;
+    width: 100%;
+}
+.fake-ff .fake-devtools-header-tabs {
+    display: table-cell;
+}
+.fake-ff .fake-devtools-header-tabs-content {
+    background: url(img/ff-light-top-tabs.png) no-repeat 100% 0;
+    height: 28px;
+    max-width: 747px;
+}
+.fake-ff .fake-devtools-header-actions {
+    background: url(img/ff-light-top-actions.png) no-repeat 100% 0;
+    display: table-cell;
+    height: 28px;
+    width: 162px;
+}
+.fake-ff .fake-devtools-content {
+    display: table;
+    width: 100%;
+}
+.fake-ff .fake-devtools-elements {
+    border-right: 1px solid #b3b3b3;
+    display: table-cell;
+    vertical-align: top;
+}
+.fake-ff .fake-devtools-elements-header {
+    background: #f0f1f2 url(img/ff-light-element-breadcrumbs.png) 0 0 no-repeat;
+    border-bottom: 1px solid #aaa;
+    height: 32px;
+}
+.fake-ff .fake-devtools-elements-header .fake-devtools-search {
+    background: url(img/ff-light-search.png) no-repeat;
+    display: block;
+    float: right;
+    height: 32px;
+    width: 63px;
+}
+.fake-ff .fake-devtools-elements-content {
+    background: #fff url(img/ff-light-elements.png) 100% 0;
+    height: 360px;
+}
+.fake-ff .fake-devtools-panel {
+    display: table-cell;
+    min-width: 300px;
+    width: 330px;
+}
+.fake-ff .fake-devtools-panel-header {
+    background: #f0f1f2;
+    border-bottom: 1px solid #aaa;
+    height: 32px;
+}
+.fake-ff .fake-devtools-panel-tabs {
+    display: table;
+    height: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+.fake-ff .fake-devtools-panel-tabs li {
+    box-sizing: border-box;
+    display: table-cell;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    width: 25%;
+}
+.fake-ff .fake-devtools-panel-tabs li:before {
+    background: #aaa;
+    content: '';
+    display: block;
+    height: 22px;
+    left: 0;
+    top: 5px;
+    position: absolute;
+    width: 1px;
+}
+.fake-ff .fake-devtools-panel-tabs li:first-child:before {
+    display: none;
+}
+.fake-ff .fake-devtools-panel-tabs li.selected {
+    border: solid #aaa;
+    border-width: 0 1px;
+    background-color: #4c9ed9;
+    color: #f5f7fa;
+}
+.fake-ff .fake-devtools-panel-tabs li.selected:before,
+.fake-ff .fake-devtools-panel-tabs li.selected + li:before {
+    display: none;
+}
+.fake-ff .fake-devtools-panel-content {
+    min-height: 6em;
+    padding-bottom: 1em;
+}

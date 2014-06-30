@@ -1,0 +1,43 @@
+.fake-ff-dark .fake-devtools {
+    border-top-color: #b3b3b3;
+}
+.fake-ff-dark .fake-devtools-header {
+    background-image: url(img/ff-dark-top-bg.png);
+    border-bottom-color: #000;
+}
+.fake-ff-dark .fake-devtools-header-tabs-content {
+    background-image: url(img/ff-dark-top-tabs.png);
+}
+.fake-ff-dark .fake-devtools-header-actions {
+    background-image: url(img/ff-dark-top-actions.png);
+}
+.fake-ff-dark .fake-devtools-elements {
+    border-right-color: #000;
+}
+.fake-ff-dark .fake-devtools-elements-header {
+    background-color: #343c45;
+    background-image: url(img/ff-dark-element-breadcrumbs.png);
+    border-bottom-color: #14171a;
+}
+.fake-ff-dark .fake-devtools-elements-header .fake-devtools-search {
+    background-image: url(img/ff-dark-search.png);
+}
+.fake-ff-dark .fake-devtools-elements-content {
+    background-color: #fff;
+    background-image: url(img/ff-dark-elements.png);
+}
+.fake-ff-dark .fake-devtools-panel-header {
+    background-color: #343c45;
+    border-bottom-color: #14171a;
+}
+.fake-ff-dark .fake-devtools-panel-tabs li {
+    color: #b6babf;
+}
+.fake-ff-dark .fake-devtools-panel-tabs li:before {
+    background-color: #5a6169;
+}
+.fake-ff-dark .fake-devtools-panel-tabs li.selected {
+    background-color: #1d4f73;
+    color: #f5f7fa;
+    border-color: #5a6169;
+}

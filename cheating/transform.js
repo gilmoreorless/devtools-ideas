@@ -13,6 +13,7 @@
 
     // DOM NODES
 
+    var body = document.querySelector('.fake-page');
     var ref = document.querySelector('#ref');
     var transRoot = document.querySelector('#transform2d');
     var transContainer = document.querySelector('.trans-container');
@@ -28,7 +29,7 @@
     });
     var guidesParent = document.createElement('div');
     var guidesElemParent = document.createElement('div');
-    guidesParent.className = guidesElemParent.className = 'trans-action-guides-container';
+    guidesParent.className = guidesElemParent.className = 'trans-action-guides-container trans-cursor';
 
 
     // PARAMETERS
@@ -61,7 +62,7 @@
 
     function setup() {
         transRoot.appendChild(guidesParent);
-        document.body.appendChild(guidesElemParent);
+        body.appendChild(guidesElemParent);
 
         btnsContainer.addEventListener('click', function (e) {
             var action = e.target.getAttribute('data-action');
@@ -292,6 +293,7 @@
             '' :
             distX < distY ? 'x' : 'y';
         if (curAxis !== oldAxis) {
+            body.setAttribute('data-axis', curAxis);
             transRoot.setAttribute('data-axis', curAxis);
         }
     }
@@ -426,6 +428,7 @@
             var add = action === mode;
             btn.classList[add ? 'add' : 'remove']('selected');
         });
+        body.setAttribute('data-mode', mode);
         transRoot.setAttribute('data-mode', mode);
         if (mode) {
             showGuides();
