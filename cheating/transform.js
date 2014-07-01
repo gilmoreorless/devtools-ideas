@@ -13,6 +13,7 @@
 
     // DOM NODES
 
+    var docRoot = document.documentElement;
     var body = document.querySelector('.fake-page');
     var ref = document.querySelector('#ref');
     var transRoot = document.querySelector('#transform2d');
@@ -72,8 +73,10 @@
             }
         }, false);
         propTrans.addEventListener('click', transPartSelected, false);
-        transContainer.addEventListener('mousedown', actionMousedown, false);
-        transContainer.addEventListener('mousemove', pickAxis, false);
+        transContainer.addEventListener('mousedown', actionMousedown(transRoot, transOrigin), false);
+        transContainer.addEventListener('mousemove', pickAxis(axisBounds), false);
+        guidesElemParent.addEventListener('mousedown', actionMousedown(body, ref), false);
+        guidesElemParent.addEventListener('mousemove', pickAxis(axisElemBounds), false);
     }
 
     function eachAction(callback) {
@@ -107,63 +110,75 @@
 
     // DRAG HANDLERS
 
-    function actionMousedown(e) {
-        if (!curMode) {
-            return;
-        }
-        dragStart = {
-            x: e.pageX,
-            y: e.pageY,
-            originBounds: getBounds(transOrigin),
-            values: [],
-            isNewPart: false
-        };
-        var part;
-        if (curPartIdx > -1) {
-            part = curTransObj.getPart(curPartIdx);
-        } else {
-            part = curTransObj.getLastPart();
-            if (!part || part.type !== curMode) {
-                part = curTransObj.addPart(curMode);
-                dragStart.isNewPart = true;
+    function actionMousedown(root, origin) {
+        return function mdown(e) {
+            if (!curMode) {
+                return;
             }
-            curPartIdx = curTransObj.parts.length - 1;
-        }
-        dragStart.values = [].concat(part.values); // Make sure it's a clone and not a reference
+            dragStart = {
+                x: e.pageX,
+                y: e.pageY,
+                originBounds: getBounds(origin),
+                values: [],
+                isNewPart: false,
+                handleMove: actionMousemove(),
+                handleUp: actionMouseup(root)
+            };
+            var part;
+            if (curPartIdx > -1) {
+                part = curTransObj.getPart(curPartIdx);
+            } else {
+                part = curTransObj.getLastPart();
+                if (!part || part.type !== curMode) {
+                    part = curTransObj.addPart(curMode);
+                    dragStart.isNewPart = true;
+                }
+                curPartIdx = curTransObj.parts.length - 1;
+            }
+            dragStart.values = [].concat(part.values); // Make sure it's a clone and not a reference
 
-        document.addEventListener('selectstart', doNothing, false);
-        document.addEventListener('mousemove', actionMousemove, false);
-        document.addEventListener('mouseup', actionMouseup, false);
-        transRoot.classList.add('dragging');
+            document.addEventListener('selectstart', doNothing, false);
+            document.addEventListener('mousemove', dragStart.handleMove, false);
+            document.addEventListener('mouseup', dragStart.handleUp, false);
+            root.classList.add('dragging');
+            setTimeout(function () {
+                root.style.cursor = getComputedStyle(document.querySelector('.trans-cursor')).cursor;
+            });
+        };
     }
 
-    function actionMousemove(e) {
-        if (!dragStart) {
-            return;
-        }
-        if (dragHandlers[curMode]) {
-            var x = e.pageX;
-            var y = e.pageY;
-            var dx = x - dragStart.x;
-            var dy = y - dragStart.y;
-            var values = dragHandlers[curMode].call(this, e, dx, dy);
-            curTransObj.setPart(curPartIdx, values);
+    function actionMousemove() {
+        return function mmove(e) {
+            if (!dragStart) {
+                return;
+            }
+            if (dragHandlers[curMode]) {
+                var x = e.pageX;
+                var y = e.pageY;
+                var dx = x - dragStart.x;
+                var dy = y - dragStart.y;
+                var values = dragHandlers[curMode].call(this, e, dx, dy);
+                curTransObj.setPart(curPartIdx, values);
+                cheat.refresh();
+                updateGuides(curTransObj.getPart(curPartIdx));
+            }
+        };
+    }
+
+    function actionMouseup(root) {
+        return function mup(e) {
+            if (dragStart.isNewPart && dragStart.x === e.pageX && dragStart.y === e.pageY) {
+                curTransObj.popPart();
+            }
+            curPartIdx = -1;
+            document.removeEventListener('selectstart', doNothing, false);
+            document.removeEventListener('mousemove', dragStart.handleMove, false);
+            document.removeEventListener('mouseup', dragStart.handleUp, false);
+            root.classList.remove('dragging');
+            root.style.cursor = '';
             cheat.refresh();
-            updateGuides(curTransObj.getPart(curPartIdx));
-        }
-    }
-
-    function actionMouseup(e) {
-        if (dragStart.isNewPart && dragStart.x === e.pageX && dragStart.y === e.pageY) {
-            curTransObj.popPart();
-        }
-        dragStart = null;
-        curPartIdx = -1;
-        document.removeEventListener('selectstart', doNothing, false);
-        document.removeEventListener('mousemove', actionMousemove, false);
-        document.removeEventListener('mouseup', actionMouseup, false);
-        transRoot.classList.remove('dragging');
-        cheat.refresh();
+            dragStart = null;
+        };
     }
 
     var dragHandlers = {
@@ -275,27 +290,28 @@
             width:  minWH,
             height: minWH
         });
-        transRoot.removeAttribute('data-axis');
+        docRoot.removeAttribute('data-axis');
         return globalBounds;
     }
 
     var axisProximity = 20;
-    function pickAxis(e) {
-        if (dragStart || !guideDisplays[curMode] || !guideDisplays[curMode].pickAxis) {
-            return;
-        }
-        var x = e.pageX, y = e.pageY;
-        var distX = Math.min(Math.abs(x - axisBounds.right), Math.abs(y - axisBounds.top));
-        var distY = Math.min(Math.abs(x - axisBounds.left), Math.abs(y - axisBounds.bottom));
-        var minDist = Math.min(distX, distY);
-        var oldAxis = curAxis;
-        curAxis = minDist > axisProximity ?
-            '' :
-            distX < distY ? 'x' : 'y';
-        if (curAxis !== oldAxis) {
-            body.setAttribute('data-axis', curAxis);
-            transRoot.setAttribute('data-axis', curAxis);
-        }
+    function pickAxis(globalBounds) {
+        return function (e) {
+            if (dragStart || !guideDisplays[curMode] || !guideDisplays[curMode].pickAxis) {
+                return;
+            }
+            var x = e.pageX, y = e.pageY;
+            var distX = Math.min(Math.abs(x - globalBounds.right), Math.abs(y - globalBounds.top));
+            var distY = Math.min(Math.abs(x - globalBounds.left), Math.abs(y - globalBounds.bottom));
+            var minDist = Math.min(distX, distY);
+            var oldAxis = curAxis;
+            curAxis = minDist > axisProximity ?
+                '' :
+                distX < distY ? 'x' : 'y';
+            if (curAxis !== oldAxis) {
+                docRoot.setAttribute('data-axis', curAxis);
+            }
+        };
     }
 
     var guideDisplays = {
@@ -331,7 +347,6 @@
             return main;
         },
         translate: function (parent, elem) {
-            return;
             var padding = 10;
             var box = getBounds(elem);
             var main = put('div.trans-agtranslate');
@@ -339,9 +354,9 @@
             parent.style.top = (box.top - padding) + 'px';
             main.style.width = (box.width + padding * 2) + 'px';
             main.style.height = (box.height + padding * 2) + 'px';
-            ['top', 'right', 'bottom', 'left'].forEach(function (dir) {
-                put(main, 'div.trans-agtranslate-arrow.arrow-' + dir);
-            });
+            // ['top', 'right', 'bottom', 'left'].forEach(function (dir) {
+            //     put(main, 'div.trans-agtranslate-arrow.arrow-' + dir);
+            // });
             put(parent, main);
             return main;
         }

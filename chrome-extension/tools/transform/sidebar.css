@@ -265,8 +265,10 @@ h4 {
 
 .trans-action-guides-container {
     color: rgba(0,0,0,0.1);
-    pointer-events: none;
     position: absolute;
+}
+.styles-section .trans-action-guides-container {
+    pointer-events: none;
 }
 .trans-agrotate {
     border: 6px double;
