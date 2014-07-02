@@ -1,0 +1,108 @@
+/* Copied/altered from chrome-devtools://devtools/bundled/inspector.css */
+/* Mac-specific at the moment - this is all demo-ware anyway */
+
+body {
+    color: rgb(48, 57, 66);
+    font-family: 'Lucida Grande', sans-serif;
+    font-size: 12px;
+    margin: 0;
+}
+.monospace, .source-code {
+    font-size: 11px;
+    font-family: Menlo, monospace;
+}
+.webkit-css-property {
+    color: rgb(200, 0, 0);
+}
+
+/* Copied/altered from chrome-devtools://devtools/bundled/elementsPanel.css */
+
+.styles-section {
+    padding: 2px 2px 4px 4px;
+    min-height: 18px;
+    white-space: nowrap;
+    background-origin: padding;
+    background-clip: padding;
+    -webkit-user-select: text;
+    border-bottom: 1px solid rgb(191, 191, 191);
+}
+.styles-section .header {
+    white-space: nowrap;
+}
+.styles-section .header .title {
+    word-wrap: break-word;
+    white-space: normal;
+}
+.styles-section .selector {
+    color: #888;
+}
+
+.styles-section .simple-selector.selector-matches {
+    color: #222;
+}
+.styles-section .properties {
+    display: none;
+    margin: 0;
+    padding: 2px 4px 0 0;
+    list-style: none;
+    clear: both;
+}
+
+.styles-section.matched-styles .properties {
+    padding-left: 0;
+}
+.styles-section.expanded .properties {
+    display: block;
+}
+
+.styles-section .properties li {
+    margin-left: 12px;
+    padding-left: 22px;
+    padding-top: 0;
+    white-space: normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: auto;
+}
+
+.styles-section.computed-style.expanded .properties > li {
+    padding-left: 0;
+}
+
+.styles-section.computed-style.expanded .properties > li .webkit-css-property {
+    margin-left: 0;
+}
+
+.styles-section .properties li .webkit-css-property {
+    margin-left: -22px; /* outdent the first line of longhand properties (in an expanded shorthand) to compensate for the "padding-left" shift in .styles-section .properties li */
+}
+
+.styles-section.expanded .properties > li {
+    padding-left: 38px;
+}
+
+.styles-section .properties > li .webkit-css-property {
+    margin-left: -38px; /* outdent the first line of the top-level properties to compensate for the "padding-left" shift in .styles-section .properties > li */
+}
+
+.properties-tree {
+    margin: 0;
+    padding: 0 6px 2px;
+    list-style: none;
+    min-height: 18px;
+}
+
+.properties-tree li {
+    margin-left: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-user-select: text;
+    cursor: default;
+    padding-top: 2px;
+    line-height: 12px;
+}
+
+.properties-tree li.parent {
+    margin-left: 1px;
+}

@@ -52,7 +52,7 @@
     var dragStart = null;
     var axisBounds = {};
     var axisElemBounds = {};
-
+    var cssProp = 'transform';
 
 
     /*****************\
@@ -62,9 +62,18 @@
     // UTILS
 
     function setup() {
+        // Vendor prefixes
+        ['webkit', 'moz'].forEach(function (prefix) {
+            if ((prefix + 'Transform') in document.body.style) {
+                cssProp = prefix + 'Transform';
+            }
+        });
+
+        // DOM nodes
         transRoot.appendChild(guidesParent);
         body.appendChild(guidesElemParent);
 
+        // Event listeners
         btnsContainer.addEventListener('click', function (e) {
             var action = e.target.getAttribute('data-action');
             if (action) {
@@ -90,17 +99,26 @@
     }
 
     function extend(o, n) {
-        Object.keys(n).forEach(function (key) {
+        forEach(o, function (key) {
             o[key] = n[key];
         });
         return o;
+    }
+
+    function forEach(obj, callback, context) {
+        if (obj.forEach) {
+            return obj.forEach(callback, context);
+        }
+        for (var key in obj) {
+            callback.call(context || obj, key);
+        }
     }
 
     function getBounds(elem) {
         var rect = elem.getBoundingClientRect();
         var bounds = {};
         var extra = {left: window.scrollX, top: window.scrollY};
-        Object.keys(rect).forEach(function (key) {
+        forEach(rect, function (key) {
             bounds[key] = rect[key] + (extra[key] || 0);
         });
         return bounds;
@@ -365,7 +383,7 @@
     guideDisplays.skew.pickAxis = guideDisplays.scale.pickAxis = true;
 
     guideDisplays.rotate.update = function (guide, part) {
-        guide.style.webkitTransform = TransformBuilder.partToString(part);
+        guide.style[cssProp] = TransformBuilder.partToString(part);
     };
 
 
@@ -411,10 +429,10 @@
 
     cheat.refresh = function () {
         var curTrans = curTransObj.toString();
-        ref.style.webkitTransform = curTrans;
-        ref.style.webkitTransformOrigin = curOrigin;
-        transDisplay.style.webkitTransform = curTrans;
-        transDisplay.style.webkitTransformOrigin = curOrigin;
+        ref.style[cssProp] = curTrans;
+        ref.style[cssProp + 'Origin'] = curOrigin;
+        transDisplay.style[cssProp] = curTrans;
+        transDisplay.style[cssProp + 'Origin'] = curOrigin;
         var xy = curOrigin.split(' ');
         transOrigin.style.left = xy[0];
         transOrigin.style.top = xy[1];

@@ -20,3 +20,286 @@
 [data-axis=y] .trans-cursor { cursor: ns-resize; }
 [data-mode=translate] .trans-cursor { cursor: -webkit-grab; cursor: grab; }
 [data-mode=translate].dragging .trans-cursor { cursor: -webkit-grabbing; cursor: grabbing; }
+
+
+/* 2D transforms */
+
+h4 {
+    margin: 0.5em 0.25em;
+}
+/* Actions styles based on the Network panel filter options */
+.trans-actions {
+    cursor: default;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.trans-actions li {
+    border-radius: 8px;
+    background: transparent;
+    display: inline-block;
+    margin: auto 2px;
+    padding: 4px 6px 3px 6px;
+    text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
+}
+.trans-actions li:hover,
+.trans-actions li.selected {
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    text-shadow: rgba(0, 0, 0, 0.4) 0 1px 0;
+}
+.trans-actions li.selected {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.trans-container {
+    border: 1px dashed #ccc;
+    margin: 0.5em 1em 1em 1em;
+    min-height: 150px;
+    min-width: 150px;
+    position: relative;
+}
+.trans {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    left: 50%;
+    top: 50%;
+    margin: -26px -26px;
+}
+.trans:before {
+    content: '';
+    display: block;
+    border: solid #999;
+    border-width: 1px 0;
+    height: 17px;
+    width: 100%;
+    position: absolute;
+    top: 16px;
+}
+.trans:after {
+    content: '';
+    display: block;
+    border: solid #999;
+    border-width: 0 1px;
+    width: 17px;
+    height: 100%;
+    position: absolute;
+    left: 16px
+}
+/*
+.trans .arrow {
+    display: block;
+    width: 3px;
+    height: 40px;
+    background: #666;
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+}
+.trans .arrow:after {
+    content: '';
+    width: 0;
+    height: 0;
+    display: block;
+    border: solid transparent;
+    border-bottom-color: #666;
+    border-width: 0 7px 11px 7px;
+    position: absolute;
+    top: -11px;
+    left: -5px;
+}
+*/
+.trans .arrow {
+    display: block;
+    width: 0;
+    height: 0;
+    border: solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.3);
+    border-width: 25px 6px 0 6px;
+    position: absolute;
+    left: 19px;
+    bottom: 25px;
+}
+.trans .arrow:after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border: solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.5);
+    border-width: 0 6px 11px 6px;
+    position: absolute;
+    top: -37px;
+    left: -6px;
+}
+.trans .origin {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border: 2px solid #c00;
+    border-radius: 50%;
+    margin: -4px 0 0 -4px;
+}
+.trans .top {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+}
+.trans-base {
+    opacity: 0.3;
+}
+
+.trans-part,
+.trans-part-read-only {
+    border-radius: 4px;
+    display: inline-block;
+    padding: 2px 0;
+}
+.trans-part {
+    cursor: pointer;
+    padding: 2px 4px;
+    /* margin: 0 -2px; */
+}
+.trans-part + .trans-part {
+    margin-left: -3px;
+}
+.trans-part:hover,
+.trans-part.selected {
+    background: rgba(0, 0, 0, 0.2);
+}
+.trans-part.selected {
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    text-shadow: rgba(0, 0, 0, 0.4) 0 1px 0;
+}
+
+.trans-action-guides-container {
+    color: rgba(0,0,0,0.1);
+    position: absolute;
+}
+.styles-section .trans-action-guides-container {
+    pointer-events: none;
+}
+.trans-agrotate {
+    border: 6px double;
+    border-radius: 50%;
+    position: relative;
+}
+.trans-agrotate-control {
+    background-color: rgba(0,0,0,0.2);
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    margin-left: -5px;
+}
+.trans-agskew {
+    position: relative;
+}
+.trans-agskew-axis {
+    border: 1px solid;
+    box-sizing: border-box;
+    position: absolute;
+}
+.trans-agskew-axis.axis-x {
+    width: 80%;
+    height: 6px;
+    top: 0;
+    left: 10%;
+}
+.trans-agskew-axis.axis-y {
+    width: 6px;
+    height: 80%;
+    top: 10%;
+    left: 0;
+}
+[data-axis=x]:hover .trans-agskew-axis.axis-x,
+[data-axis=y]:hover .trans-agskew-axis.axis-y {
+    color: rgba(0,33,0,0.3);
+}
+.trans-agskew-axis:before,
+.trans-agskew-axis:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 3px solid transparent;
+}
+.trans-agskew-axis.axis-x:before {
+    border-right-color: currentColor;
+    left: -7px;
+    top: -1px
+}
+.trans-agskew-axis.axis-x:after {
+    border-left-color: currentColor;
+    right: -7px;
+    top: -1px;
+}
+.trans-agskew-axis.axis-y:before {
+    border-bottom-color: currentColor;
+    top: -7px;
+    left: -1px;
+}
+.trans-agskew-axis.axis-y:after {
+    border-top-color: currentColor;
+    bottom: -7px;
+    left: -1px;
+}
+.trans-agtranslate-arrow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid;
+    border-top-color: white;
+    z-index: 2;
+    -webkit-transform-origin: 50% 100%;
+    transform-origin: 50% 100%;
+}
+.trans-agtranslate-arrow:before,
+.trans-agtranslate-arrow:after {
+    content: '';
+    width: 0;
+    height: 0;
+    position: absolute;
+    border: 10px solid transparent;
+    border-bottom-color: currentColor;
+    top: -20px;
+    left: -5px;
+    z-index: 1;
+}
+.trans-agtranslate-arrow:after {
+    border-width: 8px;
+    border-bottom-color: white;
+    top: -16px;
+    left: -3px;
+    z-index: 3;
+}
+.trans-agtranslate-arrow.arrow-top {
+    top: 0;
+    left: 50%;
+    -webkit-transform: translate(-50%, -100%);
+    transform: translate(-50%, -100%);
+}
+.trans-agtranslate-arrow.arrow-right {
+    top: 50%;
+    left: 100%;
+    -webkit-transform: translate(-50%, -100%) rotate(90deg);
+    transform: translate(-50%, -100%) rotate(90deg);
+}
+.trans-agtranslate-arrow.arrow-bottom {
+    top: 100%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -100%) rotate(180deg);
+    transform: translate(-50%, -100%) rotate(180deg);
+}
+.trans-agtranslate-arrow.arrow-left {
+    top: 50%;
+    left: 0;
+    -webkit-transform: translate(-50%, -100%) rotate(-90deg);
+    transform: translate(-50%, -100%) rotate(-90deg);
+}
