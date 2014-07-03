@@ -152,6 +152,9 @@ h4 {
     opacity: 0.3;
 }
 
+.trans-multi-prop .raw-value {
+    display: none;
+}
 .trans-part,
 .trans-part-read-only {
     border-radius: 4px;

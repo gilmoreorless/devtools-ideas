@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="faker/fake-firefox-dark.css">
     <link rel="stylesheet" href="faker/sidebar-chrome.css">
     <link rel="stylesheet" href="transform.css">
-    <!-- <link rel="stylesheet" href="transform-alt.css"> -->
+    <link rel="stylesheet" href="transform-alt.css">
 </head>
 <body>
     <div class="fake-window">
@@ -63,26 +63,30 @@
     </div>
     <div class="relevant-properties">
         <ul class="properties properties-tree monospace">
-            <li id="t2d-prop-transform" class="trans-properties">
-                <span class="webkit-css-property">transform</span>:
-                <span class="value"></span>;
+            <li id="t2d-prop-transform" class="trans-properties trans-multi-prop">
+                <span class="webkit-css-property">transform</span>: <span class="raw-value"></span>
+                <span class="values"></span><span class="semi-colon">;</span>
             </li>
             <li id="t2d-prop-transform-origin" class="trans-properties">
                 <span class="webkit-css-property">transform-origin</span>:
-                <span class="value"></span>;
+                <span class="raw-value"></span>;
             </li>
         </ul>
     </div>
 </div>
-<script src="../playground/lib/put.js"></script>
-<script src="faker/fake-switcher.js"></script>
-<script src="transform-builder.js"></script>
-<script src="transform.js"></script>
 
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="../playground/lib/put.js"></script>
+    <script src="faker/fake-switcher.js"></script>
+
+<!-- SCRIPTS GO HERE -->
+<script src="transform-builder.js"></script>
+<script src="transform.js"></script>
+
 </body>
 </html>

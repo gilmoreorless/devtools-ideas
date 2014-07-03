@@ -21,8 +21,9 @@
     var transBase = document.querySelector('.trans-base');
     var transDisplay = document.querySelector('.trans-elem');
     var transOrigin = transBase.querySelector('.origin');
-    var propTrans  = document.querySelector('#t2d-prop-transform .value');
-    var propOrigin = document.querySelector('#t2d-prop-transform-origin .value');
+    var propTrans = document.querySelector('#t2d-prop-transform .raw-value');
+    var propTransValues = document.querySelector('#t2d-prop-transform .values');
+    var propOrigin = document.querySelector('#t2d-prop-transform-origin .raw-value');
     var btnsContainer = document.querySelector('.trans-actions');
     var btn = {};
     ['rotate', 'scale', 'skew', 'translate'].forEach(function (trans) {
@@ -81,7 +82,7 @@
                 cheat.setMode(mode);
             }
         }, false);
-        propTrans.addEventListener('click', transPartSelected, false);
+        propTransValues.addEventListener('click', transPartSelected, false);
         transContainer.addEventListener('mousedown', actionMousedown(transRoot, transOrigin), false);
         transContainer.addEventListener('mousemove', pickAxis(axisBounds), false);
         guidesElemParent.addEventListener('mousedown', actionMousedown(body, ref), false);
@@ -403,10 +404,10 @@
                 return node;
             });
         } else {
-            nodes = [put('span.trans-part-read-only', curTransObj.toString())];
+            nodes = [put('span.trans-part-read-only.blank', curTransObj.toString())];
         }
-        propTrans.innerHTML = '';
-        put(propTrans, nodes);
+        propTransValues.innerHTML = '';
+        put(propTransValues, nodes);
     }
 
     function transPartSelected(e) {
@@ -436,6 +437,7 @@
         var xy = curOrigin.split(' ');
         transOrigin.style.left = xy[0];
         transOrigin.style.top = xy[1];
+        propTrans.textContent = getComputedStyle(ref)[cssProp] + ';';
         propOrigin.innerHTML = '<span class="trans-part-read-only">' + curOrigin + '</span>';
         outputTransformPartNodes();
     };

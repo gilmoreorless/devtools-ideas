@@ -1,0 +1,54 @@
+.trans-multi-prop .raw-value {
+    display: inline;
+}
+.trans-multi-prop .values .blank,
+.trans-multi-prop .semi-colon {
+    display: none;
+}
+.trans-part,
+.trans-part-read-only {
+    border-radius: 4px;
+    display: inline-block;
+    padding: 2px 0;
+}
+.trans-part {
+    cursor: pointer;
+    padding: 4px .5em;
+    margin: 0;
+    display: block;
+    position: relative;
+    width: 80%;
+}
+.trans-part,
+.trans-part + .trans-part {
+    margin-left: 2em;
+}
+.trans-part:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+.trans-part.selected {
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    text-shadow: rgba(0, 0, 0, 0.4) 0 1px 0;
+}
+.trans-part::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1.7em;
+    left: -0.5em;
+    top: 0;
+    border-left: 1px dotted #808080;
+}
+.trans-part:last-child::before {
+    height: 0.8em;
+}
+.trans-part::after {
+    content: '';
+    position: absolute;
+    width: 0.5em;
+    height: 0;
+    left: -0.4em;
+    top: 0.8em;
+    border-top: 1px dotted #808080;
+}

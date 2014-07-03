@@ -41,3 +41,6 @@
     color: #f5f7fa;
     border-color: #5a6169;
 }
+.fake-ff-dark .fake-devtools-panel-content {
+    background-color: #14171a;
+}

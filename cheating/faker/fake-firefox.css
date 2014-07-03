@@ -98,6 +98,7 @@
     display: none;
 }
 .fake-ff .fake-devtools-panel-content {
+    background-color: #fcfcfc;
     min-height: 6em;
     padding-bottom: 1em;
 }
