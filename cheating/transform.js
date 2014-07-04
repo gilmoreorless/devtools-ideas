@@ -79,6 +79,7 @@
             var action = e.target.getAttribute('data-action');
             if (action) {
                 var mode = action === curMode ? '' : action;
+                curPartIdx = -1;
                 cheat.setMode(mode);
             }
         }, false);
@@ -100,7 +101,7 @@
     }
 
     function extend(o, n) {
-        forEach(o, function (key) {
+        forEach(n, function (key) {
             o[key] = n[key];
         });
         return o;

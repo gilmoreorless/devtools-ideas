@@ -1,7 +1,7 @@
 .fake-page {
     height: 16em;
 }
-.fake-devtools-panel {
+.fake-window .fake-devtools-panel {
     width: 350px;
 }
 .demo {
