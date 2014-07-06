@@ -8,12 +8,16 @@
 
     // PUBLIC OPTIONS
 
-    cheat.shouldShowGuides = true;
+    cheat.options = new Options({
+        showGuides: ['Show guides', true],
+        showComputedValue: ['Show computed value', false]
+    });
 
 
     // DOM NODES
 
     var docRoot = document.documentElement;
+    var cssAltStyle = document.getElementById('trans-alt-style');
     var body = document.querySelector('.fake-page');
     var ref = document.querySelector('#ref');
     var transRoot = document.querySelector('#transform2d');
@@ -88,6 +92,18 @@
         transContainer.addEventListener('mousemove', pickAxis(axisBounds), false);
         guidesElemParent.addEventListener('mousedown', actionMousedown(body, ref), false);
         guidesElemParent.addEventListener('mousemove', pickAxis(axisElemBounds), false);
+
+        // Options
+        cheat.options.on('showGuides', function (value) {
+            if (value && curMode) {
+                showGuides();
+            } else if (!value) {
+                hideGuides();
+            }
+        });
+        cheat.options.on('showComputedValue', function (value) {
+            cssAltStyle.setAttribute('media', value ? 'all' : 'invalid');
+        });
     }
 
     function eachAction(callback) {
@@ -261,7 +277,7 @@
     }
 
     function showGuide(parent, elem, bounds) {
-        if (!cheat.shouldShowGuides) {
+        if (!cheat.options.get('showGuides')) {
             return;
         }
         var guide = guideDisplays[curMode];

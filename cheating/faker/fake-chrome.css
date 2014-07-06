@@ -28,7 +28,6 @@
     width: 100%;
 }
 .fake-chrome .fake-devtools-elements {
-    background: #fff url(img/blink-elements.png) 100% 0;
     border-right: 1px solid #a3a3a3;
     display: table-cell;
 }
@@ -46,6 +45,7 @@
     display: none;
 }
 .fake-chrome .fake-devtools-panel-content {
-    min-height: 6em;
+    min-height: 400px;
+    box-sizing: border-box;
     padding-bottom: 1em;
 }

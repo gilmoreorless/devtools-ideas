@@ -46,7 +46,7 @@
 }
 .fake-ff .fake-devtools-elements-content {
     background: #fff url(img/ff-light-elements.png) 100% 0;
-    height: 360px;
+    min-height: 400px;
 }
 .fake-ff .fake-devtools-panel {
     display: table-cell;
@@ -99,6 +99,7 @@
 }
 .fake-ff .fake-devtools-panel-content {
     background-color: #fcfcfc;
-    min-height: 6em;
+    min-height: 400px;
     padding-bottom: 1em;
+    box-sizing: border-box;
 }

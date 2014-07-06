@@ -9,7 +9,8 @@ body {
     overflow: auto;
     text-align: right;
 }
-.fake-switcher {
+.fake-switcher,
+.cheat-options {
     border-width: 1px 0 1px 1px;
     border-style: solid;
     border-color: #699;
@@ -18,7 +19,7 @@ body {
     padding: 0;
     position: absolute;
     right: 0;
-    top: 45%;
+    top: 20%;
 }
 .fake-switcher a {
     background-color: #eff;
@@ -42,4 +43,23 @@ body {
     color: #396;
     position: absolute;
     left: 0.7em;
+}
+
+.cheat-options {
+    top: 50%;
+    background-color: #F0F5F4;
+}
+.cheat-options .title {
+    font-weight: bold;
+    padding: 0.5em 1em;
+}
+.cheat-options label {
+    display: block;
+    
+    cursor: pointer;
+    padding: .25em 1em .25em .5em;
+}
+.cheat-options label:hover {
+    background-color: rgba(0,0,0,0.1);
+    
 }
