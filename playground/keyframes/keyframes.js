@@ -131,14 +131,14 @@
         }
     };
 
-    kfp.trigger = function (eventName) {
+    kfp.trigger = function (eventName, data) {
         var l = this._listeners[eventName];
         if (!l) {
             return;
         }
         l.forEach(function (listener) {
             try {
-                listener(eventName, this);
+                listener(eventName, this, data);
             } catch (e) {
                 console.error('Callback error when triggering %s event', eventName, e, listener);
             }
@@ -370,7 +370,8 @@
         if (!this._timelineValueNodes) {
             var propValues = this.getTimelineValues();
             this._timelineValueNodes = this.props.map(function (prop) {
-                if (!tlGraphs[prop.name]) {
+                var graphType = tlGraphTypes[prop.name];
+                if (!graphType) {
                     return;
                 }
                 var parent = this.timelineList.querySelector('[data-property=' + prop.name + ']');
@@ -380,7 +381,7 @@
                 graph.height = parseFloat(style.height);
                 put(parent, graph);
                 var values = propValues[prop.name];
-                tlGraphs[prop.name](graph, values);
+                tlGraphRenderers[graphType](graph, values);
                 return graph;
             }, this);
         }
@@ -395,7 +396,7 @@
         var props = {};
         var i = 0;
         var prevStop = this._lastStop;
-        for (i; i <= 100; i++) {
+        for (i; i < 100; i++) {
             this.setStop(i + '%');
             // TODO: Hard-coded updateElems[0] is fragile
             var style = getComputedStyle(this.updateElems[0]);
@@ -421,7 +422,94 @@
         this._timelineValueNodes = null;
     };
 
-    var tlGraphs = {
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties
+    var tlGraphTypes = {
+        'transform': 'transform',
+        'transform-origin': 'multinumber',
+        'perspective': 'number',
+        'perspective-origin': 'multinumber',
+        'color': 'color',
+        'opacity': 'number',
+        'columns': 'multinumber',
+        'column-count': 'integer',
+        'column-width': 'number',
+        'column-gap': 'number',
+        'column-rule': 'MULTIRULE',
+        'column-rule-color': 'color',
+        'column-rule-width': 'number',
+        'letter-spacing': 'number',
+        'text-indent': 'number',
+        'word-spacing': 'number',
+        'text-decoration': 'MULTIRULE',
+        'text-decoration-color': 'color',
+        'text-shadow': 'shadow',
+        'flex': 'MULTIRULE',
+        'flex-basis': 'number',
+        'flex-grow': 'number',
+        'flex-shrink': 'number',
+        'order': 'integer',
+        'background': 'MULTIRULE',
+        'background-color': 'color',
+        'background-position': 'multinumber',
+        'background-size': 'multinumber',
+        'border': 'MULTIRULE',
+        'border-bottom': 'MULTIRULE',
+        'border-left': 'MULTIRULE',
+        'border-right': 'MULTIRULE',
+        'border-top': 'MULTIRULE',
+        'border-color': 'multicolor',
+        'border-width': 'multinumber',
+        'border-bottom-color': 'color',
+        'border-left-color': 'color',
+        'border-right-color': 'color',
+        'border-top-color': 'color',
+        'border-bottom-width': 'number',
+        'border-left-width': 'number',
+        'border-right-width': 'number',
+        'border-top-width': 'number',
+        'border-radius': 'multinumber',
+        'border-top-left-radius': 'number',
+        'border-top-right-radius': 'number',
+        'border-bottom-right-radius': 'number',
+        'border-bottom-left-radius': 'number',
+        'box-shadow': 'shadow',
+        'margin': 'MULTIRULE',
+        'margin-bottom': 'number',
+        'margin-left': 'number',
+        'margin-right': 'number',
+        'margin-top': 'number',
+        'padding': 'MULTIRULE',
+        'padding-bottom': 'number',
+        'padding-left': 'number',
+        'padding-right': 'number',
+        'padding-top': 'number',
+        'height': 'number',
+        'max-height': 'number',
+        'min-height': 'number',
+        'width': 'number',
+        'max-width': 'number',
+        'min-width': 'number',
+        'visibility': 'visibility',
+        'vertical-align': 'number',
+        'bottom': 'number',
+        'left': 'number',
+        'right': 'number',
+        'top': 'number',
+        'z-index': 'integer',
+        'font': 'MULTIRULE',
+        'font-weight': 'fontWeight',
+        'font-stretch': 'fontStretch',
+        'font-size': 'number',
+        'line-height': 'number',
+        'font-size-adjust': 'number',
+        'outline': 'MULTIRULE',
+        'outline-color': 'color',
+        'outline-width': 'number',
+        'outline-offset': 'number',
+        'clip': 'rectangle',
+    };
+
+    var tlGraphRenderers = {
         color: function (canvas, values) {
             var ctx = canvas.getContext('2d');
             var w = canvas.width;
@@ -436,30 +524,89 @@
                 ctx.fillRect(wpi, 0, wpart + 1, h);
             });
         },
-        width: function (canvas, values) {
+        multicolor: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: multicolor');
+        },
+        number: function (canvas, values, options) {
+            options = options || {};
             var ctx = canvas.getContext('2d');
             var w = canvas.width;
-            var h = canvas.height;
+            var h = options.height || canvas.height;
+            var topY = +options.topY || 0;
             var wpart = w / (values.length - 1);
-            var floats = values.map(parseFloat);
+            var floats = values.map(function (n) {
+                return parseFloat(n) || 0;
+            });
             var min = Math.min.apply(Math, floats);
             var max = Math.max.apply(Math, floats);
+            // TODO: Handle negative values
             var scale = max / h;
             ctx.beginPath();
-            ctx.moveTo(0, h);
+            ctx.moveTo(0, h + topY);
             floats.forEach(function (value, i) {
                 var x = wpart * i;
                 var y = value / scale;
-                ctx.lineTo(x, h - y);
+                if (options.discreteValues && i) {
+                    var x2 = x - wpart / 2;
+                    var prevY = floats[i - 1] / scale;
+                    ctx.lineTo(x2, h - prevY + topY);
+                    ctx.lineTo(x2, h - y + topY);
+                }
+                ctx.lineTo(x, h - y + topY);
             });
-            ctx.lineTo(w, h);
+            ctx.lineTo(w, h + topY);
             ctx.closePath();
 
-            var gradient = ctx.createLinearGradient(0, 0, 0, h);
+            var gradient = ctx.createLinearGradient(0, topY, 0, topY + h);
             gradient.addColorStop(0, '#ccc');
             gradient.addColorStop(1, '#999');
             ctx.fillStyle = gradient;
             ctx.fill();
+        },
+        multinumber: function (canvas, values) {
+            var splitValues = values.map(function (value) {
+                // TODO: More robust splitting, handle "/" as divider
+                return value.split(' ');
+            });
+            var height = canvas.height;
+            var partCount = splitValues[0].length;
+            var partHeight = height / partCount;
+            var partValues;
+            for (var i = 0, ii = partCount; i < ii; i++) {
+                partValues = splitValues.map(function (parts) {
+                    return parts[i];
+                });
+                tlGraphRenderers.number.call(this, canvas, partValues, {
+                    height: partHeight,
+                    topY: partHeight * i
+                });
+            }
+        },
+        integer: function (canvas, values) {
+            tlGraphRenderers.number.call(this, canvas, values, {
+                discreteValues: true
+            });
+        },
+        rectangle: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: rectangle');
+        },
+        shadow: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: shadow');
+        },
+        transform: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: transform');
+        },
+        visibility: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: visibility');
+        },
+        fontWeight: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: fontWeight');
+        },
+        fontStretch: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: fontStretch');
+        },
+        MULTIRULE: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: MULTIRULE');
         }
     }
 
