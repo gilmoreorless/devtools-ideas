@@ -14,6 +14,24 @@ body {
 .webkit-css-property {
     color: rgb(200, 0, 0);
 }
+.webkit-html-resource-link {
+    /* Required for consistency with view-source.css, since anchors may not have href attributes */
+    text-decoration: underline;
+    cursor: pointer;
+}
+input[type="checkbox"] {
+    height: 12px;
+    width: 12px;
+    margin: auto 3px;
+    flex-shrink: 0;
+}
+label:hover {
+    cursor: pointer;
+}
+label:hover input {
+    box-shadow: 0 0 3px highlight;
+}
+
 
 /* Copied/altered from chrome-devtools://devtools/bundled/elementsPanel.css */
 
@@ -85,6 +103,31 @@ body {
     margin-left: -38px; /* outdent the first line of the top-level properties to compensate for the "padding-left" shift in .styles-section .properties > li */
 }
 
+.styles-section.matched-styles .properties li {
+    margin-left: 0 !important;
+}
+
+.styles-section.matched-styles:not(.read-only):hover .properties .enabled-button {
+    visibility: visible;
+}
+
+.styles-section.matched-styles:not(.read-only) .properties li.disabled .enabled-button {
+    visibility: visible;
+}
+
+.styles-section .properties .enabled-button {
+    visibility: hidden;
+    float: left;
+    font-size: 10px;
+    margin: 0;
+    vertical-align: top;
+    position: relative;
+    z-index: 1;
+    width: 18px;
+    left: -40px; /* original -2px + (-38px) to compensate for the first line outdent */
+    top: 1px;
+}
+
 .properties-tree {
     margin: 0;
     padding: 0 6px 2px;
@@ -106,3 +149,27 @@ body {
 .properties-tree li.parent {
     margin-left: 1px;
 }
+
+.styles-section .header .subtitle {
+    color: rgb(85, 85, 85);
+    float: right;
+    margin-left: 5px;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.styles-section .header .subtitle a {
+    color: inherit;
+}
+
+.styles-section a[data-uncopyable] {
+    display: inline-block;
+}
+
+.styles-section a[data-uncopyable]::before {
+    content: attr(data-uncopyable);
+    text-decoration: underline;
+}
+

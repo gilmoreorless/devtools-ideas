@@ -55,11 +55,9 @@ body {
 }
 .cheat-options label {
     display: block;
-    
     cursor: pointer;
     padding: .25em 1em .25em .5em;
 }
 .cheat-options label:hover {
     background-color: rgba(0,0,0,0.1);
-    
 }

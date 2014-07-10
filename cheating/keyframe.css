@@ -1,0 +1,63 @@
+/* Page / DevTools misc */
+
+.fake-window {
+    width: 70%;
+}
+.demo {
+    background: #B5F0F0;
+    border-radius: .75em;
+    margin: 4em auto 2em;
+    padding: 1em;
+    font-size: 14px;
+    text-align: center;
+    width: 7em;
+    position: relative;
+}
+
+[data-show-elems="false"] .fake-devtools-elements,
+[data-show-elems="false"] .fake-devtools-elements-content {
+    background-image: none;
+}
+[data-show-elems="true"] .hide-for-elements {
+    display: none;
+}
+
+
+/* DevTools elements panel */
+
+#keyframes-root {
+    margin: 0 auto;
+    width: 80%;
+}
+
+
+/* DevTools side panel */
+
+.kf-anim-view-icon {
+    position: relative;
+    padding-left: 2em;
+}
+.kf-anim-view-icon::before, .kf-anim-view-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+}
+.kf-anim-view-icon::before {
+    border: 0.7em solid #888;
+    border-radius: 100% 0 / 100% 0;
+    height: 0;
+    width: 0;
+    left: 0.25em;
+    top: 0;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+.kf-anim-view-icon::after {
+    border: 0.2em solid #fff;
+    border-radius: 100%;
+    width: 0.2em;
+    height: 0.2em;
+    left: 0.65em;
+    top: 0.35em;
+}

@@ -28,18 +28,26 @@
     width: 100%;
 }
 .fake-chrome .fake-devtools-elements {
+    background: #fff url(img/blink-elements.png) 100% 0;
     border-right: 1px solid #a3a3a3;
     display: table-cell;
 }
 .fake-chrome .fake-devtools-panel {
     display: table-cell;
-    min-width: 300px;
-    width: 300px;
+    min-width: 310px;
+    width: 310px;
+    vertical-align: top;
 }
 .fake-chrome .fake-devtools-panel-header {
     background: #ececec url(img/blink-side-panel-tabs.png) no-repeat;
     border-bottom: 1px solid #cacaca;
     height: 22px;
+}
+.fake-chrome .fake-devtools-panel-header.fake-active-styles {
+    background-image: url(img/blink-side-panel-tabs-styles.png);
+}
+.fake-chrome .fake-devtools-panel-header.fake-active-computed {
+    background-image: url(img/blink-side-panel-tabs-computed.png);
 }
 .fake-chrome .fake-devtools-panel-tabs {
     display: none;
