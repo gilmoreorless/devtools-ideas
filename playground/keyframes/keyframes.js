@@ -510,10 +510,12 @@
     };
 
     var tlGraphRenderers = {
-        color: function (canvas, values) {
+        color: function (canvas, values, options) {
+            options = options || {};
             var ctx = canvas.getContext('2d');
             var w = canvas.width;
-            var h = canvas.height;
+            var h = options.height || canvas.height;
+            var topY = +options.topY || 0;
             var wpart = w / (values.length - 1);
             values.forEach(function (value, i) {
                 var wpi = wpart * i;
@@ -521,11 +523,27 @@
                 gradient.addColorStop(0, value);
                 gradient.addColorStop(1, values[i + 1] || values[i]);
                 ctx.fillStyle = gradient;
-                ctx.fillRect(wpi, 0, wpart + 1, h);
+                ctx.fillRect(wpi, topY, wpart + 1, h);
             });
         },
         multicolor: function (canvas, values) {
-            console.warn('Unimplemented timeline renderer: multicolor');
+            var splitValues = values.map(function (value) {
+                var match = value.match(/rgb\(.*?\)/g);
+                return match || value;
+            });
+            var height = canvas.height;
+            var partCount = splitValues[1].length;
+            var partHeight = height / partCount;
+            var partValues;
+            for (var i = 0, ii = partCount; i < ii; i++) {
+                partValues = splitValues.map(function (parts) {
+                    return parts[i] || parts[0];
+                });
+                tlGraphRenderers.color.call(this, canvas, partValues, {
+                    height: partHeight,
+                    topY: partHeight * i
+                });
+            }
         },
         number: function (canvas, values, options) {
             options = options || {};
