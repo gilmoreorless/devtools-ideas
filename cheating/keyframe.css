@@ -3,15 +3,19 @@
 .fake-window {
     width: 70%;
 }
+.demo-container {
+    margin: 4em auto 2em;
+    min-height: 4em;
+    position: relative;
+}
 .demo {
     background: #B5F0F0;
     border-radius: .75em;
-    margin: 4em auto 2em;
+    margin: 0 auto;
     padding: 1em;
     font-size: 14px;
     text-align: center;
     width: 7em;
-    position: relative;
 }
 
 [data-show-elems="false"] .fake-devtools-elements,

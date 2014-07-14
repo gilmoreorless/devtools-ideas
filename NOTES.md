@@ -11,6 +11,7 @@
 
 * Add in a callback system for `setStop` rather than directly manipulating the element
 * When selecting a position in the timeline, show the computed value of all referenced properties at that time
+* Output the defined keyframe CSS above or below the timeline. Click on percentages in text to highlight the same stop on the timeline. Do other things similar to Chekhov.
 * Show an indicative canvas or SVG element in the background of the timeline row of each property, to illustrate the change of value over time including easing
     * Length values (dimensions, text-indent, etc.): A simple area chart - although `calc()` may throw a spanner in the works
     * Colours/Opacity: Gradients

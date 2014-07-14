@@ -66,7 +66,7 @@
 
         put(this.root, this.container);
         this._clearTimelineValues();
-        this.showTimelineValues();
+        // this.showTimelineValues();
     };
 
     kfp.addUpdateElement = function (elem) {
@@ -336,10 +336,13 @@
         };
         this._dragMarkers = renderCurrentTimeMarker(this);
 
-        timeline.addEventListener('mousemove', this._dragProps.onMove, false);
+        document.addEventListener('mousemove', this._dragProps.onMove, false);
         document.addEventListener('mouseup', this._dragProps.onUp, false);
         document.addEventListener('selectstart', preventDefault, false);
         this._dragProps.onMove(e);
+        setTimeout(function () {
+            document.documentElement.style.cursor = getComputedStyle(timeline).cursor;
+        });
     }
 
     function onTimelineMousemove(e) {
@@ -357,9 +360,10 @@
     }
 
     function onTimelineMouseup() {
-        this._dragProps.timelineElem.removeEventListener('mousemove', this._dragProps.onMove, false);
+        document.removeEventListener('mousemove', this._dragProps.onMove, false);
         document.removeEventListener('mouseup', this._dragProps.onUp, false);
         document.removeEventListener('selectstart', preventDefault, false);
+        document.documentElement.style.cursor = '';
         delete this._dragProps;
     }
 
@@ -555,15 +559,15 @@
             var floats = values.map(function (n) {
                 return parseFloat(n) || 0;
             });
-            var min = Math.min.apply(Math, floats);
             var max = Math.max.apply(Math, floats);
-            // TODO: Handle negative values
-            var scale = max / h;
+            var min = Math.min.apply(Math, floats);
+            var adjust = min > 0 ? 0 : -min;
+            var scale = (max - adjust) / h;
             ctx.beginPath();
             ctx.moveTo(0, h + topY);
             floats.forEach(function (value, i) {
                 var x = wpart * i;
-                var y = value / scale;
+                var y = (value + adjust) / scale;
                 if (options.discreteValues && i) {
                     var x2 = x - wpart / 2;
                     var prevY = floats[i - 1] / scale;

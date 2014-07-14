@@ -80,6 +80,12 @@
     /* margin-left: -1px; */
     position: relative;
 }
+.kfa-timeline-row canvas {
+    display: none;
+}
+.kfa-show-timeline-values .kfa-timeline-row canvas {
+    display: block;
+}
 .kfa-timeline-list .kfa-marker {
     background-color: #bbb;
     height: 100%;
