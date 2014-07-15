@@ -49,7 +49,8 @@
     -webkit-transform: translate(-50%, 0);
             transform: translate(-50%, 0);
 }
-.kfa-header .kfa-marker:hover {
+.kfa-header .kfa-marker:hover,
+.kfa-header .kfa-marker.active {
     background: #ff9;
 }
 .kfa-header .kfa-marker::after {

@@ -33,7 +33,32 @@
     margin: 0 auto;
     width: 80%;
 }
-
+.keyframes-definition {
+    line-height: 1.545454545;
+}
+.keyframes-definition ol {
+    list-style: none;
+    padding: 0;
+}
+.keyframes-definition ol ol {
+    padding-left: 2.5em;
+}
+.kfcss-declaration {}
+.kfcss-name {
+    color: rgb(50, 0, 255);
+}
+.kfcss-stop {
+    cursor: pointer;
+    padding: 4px 1px;
+}
+.kfcss-stop:hover,
+.kfcss-stop.active {
+    background-color: #ff9;
+}
+.kfcss-prop-name {
+    color: rgb(200, 0, 0);
+}
+.kfcss-prop-value {}
 
 /* DevTools side panel */
 

@@ -55,3 +55,14 @@ _(A.K.A. The stuff I willfully ignored in order to get the idea across quickly)_
 
 * Specificity of matching rules isn't correctly accounted for, just roughly guessed
 * Indicator diagram doesn't scale to always show the full transformed element (e.g. translateX(1000px) will be off the screen)
+
+## Keyframes timeline
+
+* Performance is terrible; relies on generating a new animation every time
+* After enabling the timeline, the element is in a permanently paused animation state
+
+
+# BUGS FOUND IN PUT.JS
+
+* Doesn't work with nested arrays - creates documentFragment for nodes but then returns array anyway
+* Doesn't work with just `put('$', text)` - should create and return a textNode

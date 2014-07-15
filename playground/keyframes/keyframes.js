@@ -48,7 +48,6 @@
         if (!ast) {
             return;
         }
-        // TODO: Show animation name as a title
         this.animation = ast.stylesheet.rules.filter(function (rule) {
             return rule.type === 'keyframes';
         })[0];
