@@ -24,11 +24,15 @@
         this.timelineFooter = put(this.timelineContainer, 'div.kfa-footer');
         this.updateElems = [];
         this._lastStop = null;
+        this._timelineMarkers = null;
         this._listeners = {};
 
-        // Event listeners
+        // DOM event listeners
         this.timelineHeader.addEventListener('click', onHeaderClick.bind(this), false);
         this.timelineList.addEventListener('mousedown', onTimelineMousedown.bind(this), false);
+
+        // KF event listeners
+        this.on('setStop', onSetStop.bind(this));
     };
 
     kfp._renderStopTitles = function () {
@@ -82,19 +86,16 @@
         }
     };
 
-    kfp.setStop = function (stop) {
+    kfp.setStop = function (stop, options) {
+        options = options || {};
+        stop = normaliseStop(stop);
         if (stop === this._lastStop) {
             return;
         }
         this._lastStop = stop;
-        if (!this.updateElems.length) {
-            return;
-        }
-        var animName = newAnimationName(this.animation.name);
-        this.cleanup();
-        this._sheet = injectSheet(replaceAnimationName(this.animation.raw, animName));
-        this.updateElems.forEach(function (elem) {
-            setElementAnimation(elem, animName, timingValues(stop));
+        this.trigger('setStop', {
+            stop: stop,
+            options: options
         });
     };
 
@@ -105,8 +106,8 @@
         this._sheet = null;
         if (cleanAllElems) {
             this.updateElems.forEach(removeElementAnimation);
+            removeCurrentTimeMarker(this);
         }
-        // removeCurrentTimeMarker(this);
     };
 
 
@@ -137,7 +138,7 @@
         }
         l.forEach(function (listener) {
             try {
-                listener(eventName, this, data);
+                listener.call(this, data, eventName);
             } catch (e) {
                 console.error('Callback error when triggering %s event', eventName, e, listener);
             }
@@ -164,11 +165,10 @@
     }
 
     function normaliseFrames(frames) {
-        var stopKeywords = {from: '0%', to: '100%'};
         return frames.map(function (frame) {
             return frame.values.map(function (value) {
                 return {
-                    stop: stopKeywords[value] || value,
+                    stop: normaliseStop(value),
                     declarations: frame.declarations
                 };
             });
@@ -182,6 +182,17 @@
             return frame.stop;
         });
         return stops;
+    }
+
+    // In: "from", "to", "n%" or float
+    // Out: Percentage value as float (e.g. "90%" -> 90)
+    function normaliseStop(stop) {
+        var stopKeywords = {from: 0, to: 100};
+        var value = stopKeywords[value] || stop;
+        if (typeof value === 'string' && value.slice(-1) === '%') {
+            return (parseFloat(value.slice(0, -1)) || 0);
+        }
+        return parseFloat(value) || 0;
     }
 
     function normaliseProps(frames) {
@@ -237,22 +248,48 @@
 
     /*** Private DOM utils ***/
 
+    function onSetStop(data) {
+        var value = data.stop;
+        var perc = value + '%';
+
+        // Show marker
+        if (data.options.showMarker !== false) {
+            this._timelineMarkers = renderCurrentTimeMarker(this);
+            var textMarker = this._timelineMarkers.text;
+            textMarker.textContent = Math.round(value) + '%';
+            textMarker.style.left = perc;
+            this._timelineMarkers.line.style.left = perc;
+        }
+
+        // Update element(s)
+        if (!this.updateElems.length) {
+            return;
+        }
+        var animName = newAnimationName(this.animation.name);
+        this.cleanup();
+        this._sheet = injectSheet(replaceAnimationName(this.animation.raw, animName));
+        this.updateElems.forEach(function (elem) {
+            setElementAnimation(elem, animName, timingValues(value / 100));
+        });
+    }
+
     function markerGenerator(parent, options) {
         var withText = !!options.withText;
         return function (stop) {
             var marker = put(parent, 'span.kfa-marker');
             var value = options.prop ? stop[options.prop] : stop;
+            var perc = value + '%';
             if (withText) {
-                marker.textContent = value;
+                marker.textContent = perc;
             }
-            marker.style.left = value;
+            marker.style.left = perc;
             marker.dataset.stop = value;
         };
     }
 
     function renderCurrentTimeMarker(kf) {
-        if (kf._dragMarkers) {
-            return kf._dragMarkers;
+        if (kf._timelineMarkers) {
+            return kf._timelineMarkers;
         }
         var textMarker = put(kf.timelineFooter, 'span.kfa-marker');
         var lineMarker = put(kf.timelineList, 'span.kfa-marker.kfa-current-time');
@@ -263,10 +300,10 @@
     }
 
     function removeCurrentTimeMarker(kf) {
-        if (kf._dragMarkers) {
-            removeElem(kf._dragMarkers.text);
-            removeElem(kf._dragMarkers.line);
-            delete kf._dragMarkers;
+        if (kf._timelineMarkers) {
+            removeElem(kf._timelineMarkers.text);
+            removeElem(kf._timelineMarkers.line);
+            kf._timelineMarkers = null;
         }
     }
 
@@ -312,7 +349,6 @@
     function onHeaderClick(e) {
         if (e.target.classList.contains('kfa-marker')) {
             var stop = e.target.dataset.stop;
-            removeCurrentTimeMarker(this);
             this.setStop(stop);
         }
     }
@@ -333,7 +369,6 @@
             onMove: onTimelineMousemove.bind(this),
             onUp: onTimelineMouseup.bind(this)
         };
-        this._dragMarkers = renderCurrentTimeMarker(this);
 
         document.addEventListener('mousemove', this._dragProps.onMove, false);
         document.addEventListener('mouseup', this._dragProps.onUp, false);
@@ -348,14 +383,7 @@
         var x = e.pageX;
         var perc = (x - this._dragProps.timelineX) / this._dragProps.timelineW;
         perc = Math.max(0, Math.min(1, perc));
-        var p100 = perc * 100;
-
-        var textMarker = this._dragMarkers.text;
-        textMarker.textContent = Math.round(p100) + '%';
-        textMarker.style.left = p100 + '%';
-        this._dragMarkers.line.style.left = p100 + '%';
-
-        this.setStop(perc);
+        this.setStop(perc * 100);
     }
 
     function onTimelineMouseup() {
@@ -367,7 +395,7 @@
     }
 
 
-    /*** TESTING, THIS IS NOT STABLE ***/
+    /*** Timeline value visualisations ***/
 
     kfp.showTimelineValues = function () {
         if (!this._timelineValueNodes) {
@@ -400,7 +428,7 @@
         var i = 0;
         var prevStop = this._lastStop;
         for (i; i < 100; i++) {
-            this.setStop(i + '%');
+            this.setStop(i + '%', {showMarker: false});
             // TODO: Hard-coded updateElems[0] is fragile
             var style = getComputedStyle(this.updateElems[0]);
             this.props.forEach(function (prop) {
