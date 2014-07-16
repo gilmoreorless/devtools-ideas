@@ -10,6 +10,7 @@
 
     cheat.options = new Options({
         showGuides: ['Show guides', true],
+        showElemGuides: ['Show guides on element', true],
         showComputedValue: ['Show computed value', false]
     });
 
@@ -94,13 +95,14 @@
         guidesElemParent.addEventListener('mousemove', pickAxis(axisElemBounds), false);
 
         // Options
-        cheat.options.on('showGuides', function (value) {
-            if (value && curMode) {
+        var guidesOptionHandler = function () {
+            hideGuides();
+            if (curMode) {
                 showGuides();
-            } else if (!value) {
-                hideGuides();
             }
-        });
+        };
+        cheat.options.on('showGuides', guidesOptionHandler);
+        cheat.options.on('showElemGuides', guidesOptionHandler);
         cheat.options.on('showComputedValue', function (value) {
             cssAltStyle.setAttribute('media', value ? 'all' : 'invalid');
         });
@@ -272,12 +274,21 @@
     // INTERACTIVE GUIDES
 
     function showGuides() {
-        curGuide = showGuide(guidesParent, transDisplay, axisBounds);
-        curElemGuide = showGuide(guidesElemParent, ref, axisElemBounds);
+        var mainGuide = cheat.options.get('showGuides');
+        var elemGuide = cheat.options.get('showElemGuides');
+        if (mainGuide) {
+            curGuide = showGuide('showGuides', guidesParent, transDisplay, axisBounds);
+            if (elemGuide) {
+                curElemGuide = showGuide('showElemGuides', guidesElemParent, ref, axisElemBounds);
+            }
+        }
+        if (!mainGuide && !elemGuide) {
+            hideGuides();
+        }
     }
 
-    function showGuide(parent, elem, bounds) {
-        if (!cheat.options.get('showGuides')) {
+    function showGuide(optName, parent, elem, bounds) {
+        if (!cheat.options.get(optName)) {
             return;
         }
         var guide = guideDisplays[curMode];
