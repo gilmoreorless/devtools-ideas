@@ -58,9 +58,18 @@
         kfDefs.addEventListener('mouseover', cssStopHandler, false);
         kfDefs.addEventListener('mouseout',  cssStopHandler, false);
         kfDefs.addEventListener('click', classFilter('kfcss-stop', stopValueClickHandler), false);
+
         var timelineStopHandler = classFilter('kfa-marker', stopValueMouseHandler(kfDefs, '.kfcss-stop'));
         cheat.kf.timelineHeader.addEventListener('mouseover', timelineStopHandler, false);
         cheat.kf.timelineHeader.addEventListener('mouseout',  timelineStopHandler, false);
+
+        var cssPropHandler = classFilter('hoverable', propMouseHandler(cheat.kf.propsList));
+        kfDefs.addEventListener('mouseover', cssPropHandler, false);
+        kfDefs.addEventListener('mouseout', cssPropHandler, false);
+
+        var timelinePropHandler = classFilter('kfa-property-name', propMouseHandler(kfDefs));
+        cheat.kf.propsList.addEventListener('mouseover', timelinePropHandler, false);
+        cheat.kf.propsList.addEventListener('mouseout', timelinePropHandler, false);
 
         // Options
         cheat.options.on('showFakeElems', setShowElems);
@@ -71,8 +80,12 @@
 
     function classFilter(className, fn) {
         return function (e) {
-            if (e.target.classList.contains(className)) {
-                fn.apply(this, arguments);
+            var node = e.target;
+            while (node && node !== this) {
+                if (node.classList.contains(className)) {
+                    return fn.apply(node, arguments);
+                }
+                node = node.parentNode;
             }
         };
     }
@@ -125,14 +138,14 @@
                     if (i) {
                         put(node, '$', ', ');
                     }
-                    put(node, 'span.kfcss-stop[data-stop=$] $', value, value);
+                    put(node, 'span.kfcss-stop[data-stop=$] $', cheat.kf.normaliseStop(value), value);
                 });
                 put(node, '$', ' {', buildCSSNodes(parsed.declarations));
                 put(node, '$', '}');
                 break;
             case 'declaration':
-                put(node, '[data-property=$]', parsed.property);
-                put(node, 'span.kfcss-prop-name $ < $ span.kfcss-prop-value $ < $',
+                put(node, '[data-property=$].hoverable', parsed.property);
+                put(node, 'span.selection span.kfcss-prop-name $ < $ span.kfcss-prop-value $ < $',
                     parsed.property, ': ',
                     parsed.value, ';');
                 break;
@@ -142,23 +155,38 @@
 
     function stopValueMouseHandler(root, selector) {
         return function (e) {
-            var stopValue = e.target.getAttribute('data-stop');
+            var stopValue = this.getAttribute('data-stop');
             if (!stopValue) {
                 return;
             }
+            stopValue = cheat.kf.normaliseStop(stopValue);
             var method = e.type === 'mouseover' ? 'add' : 'remove';
-            var timelineStop = root.querySelector(selector + '[data-stop="' + stopValue + '"]');
-            if (timelineStop) {
-                timelineStop.classList[method]('active');
-            }
+            var otherStops = root.querySelectorAll(selector + '[data-stop="' + stopValue + '"]');
+            Array.prototype.forEach.call(otherStops, function (other) {
+                other.classList[method]('active');
+            });
         };
     }
 
-    function stopValueClickHandler(e) {
-        var stopValue = e.target.getAttribute('data-stop');
+    function stopValueClickHandler() {
+        var stopValue = this.getAttribute('data-stop');
         if (stopValue) {
             cheat.kf.setStop(stopValue);
         }
+    }
+
+    function propMouseHandler(root) {
+        return function (e) {
+            var prop = this.getAttribute('data-property');
+            if (!prop) {
+                return;
+            }
+            var method = e.type === 'mouseover' ? 'add' : 'remove';
+            var otherProps = root.querySelectorAll('[data-property="' + prop + '"]');
+            Array.prototype.forEach.call(otherProps, function (other) {
+                other.classList[method]('active');
+            });
+        };
     }
 
 

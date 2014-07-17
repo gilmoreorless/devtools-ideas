@@ -10,6 +10,7 @@
 }
 .demo {
     background: #B5F0F0;
+    border: 0 solid #000;
     border-radius: .75em;
     margin: 0 auto;
     padding: 1em;
@@ -39,9 +40,23 @@
 .keyframes-definition ol {
     list-style: none;
     padding: 0;
+    position: relative;
 }
 .keyframes-definition ol ol {
     padding-left: 2.5em;
+}
+.keyframes-definition li.hoverable > .selection {
+    margin-left: -2.5em;
+    padding: 0 1em 0 2.5em;
+}
+.keyframes-definition li.hoverable:hover > .selection {
+    border-radius: 5px;
+}
+.keyframes-definition li.hoverable:hover > .selection,
+.keyframes-definition li.hoverable.active > .selection,
+.kfa-property-name:hover,
+.kfa-property-name.active {
+    background-color: rgba(56, 121, 217, 0.2);
 }
 .kfcss-declaration {}
 .kfcss-name {
@@ -59,6 +74,7 @@
     color: rgb(200, 0, 0);
 }
 .kfcss-prop-value {}
+
 
 /* DevTools side panel */
 

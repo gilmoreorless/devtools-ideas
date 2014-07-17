@@ -41,7 +41,7 @@
     };
 
     kfp._renderPropertyRow = function (prop) {
-        put(this.propsList, 'div.kfa-property-name $', prop.name);
+        put(this.propsList, 'div.kfa-property-name[data-property=$] $', prop.name, prop.name);
         var row = put(this.timelineList, 'div.kfa-timeline-row[data-property=$]', prop.name);
         prop.values.forEach(markerGenerator(row, {prop: 'stop'}));
     };
@@ -109,6 +109,9 @@
             removeCurrentTimeMarker(this);
         }
     };
+
+    // References to helper functions
+    kfp.normaliseStop = normaliseStop;
 
 
     /*** Basic event handling ***/
@@ -188,7 +191,7 @@
     // Out: Percentage value as float (e.g. "90%" -> 90)
     function normaliseStop(stop) {
         var stopKeywords = {from: 0, to: 100};
-        var value = stopKeywords[value] || stop;
+        var value = stopKeywords[stop] || stop;
         if (typeof value === 'string' && value.slice(-1) === '%') {
             return (parseFloat(value.slice(0, -1)) || 0);
         }
