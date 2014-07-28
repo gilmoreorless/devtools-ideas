@@ -1,11 +1,24 @@
 (function (root) {
 
-    var TB = root.TransformBuilder = function () {
-        this.parts = [];
+    var TB = root.TransformBuilder = function (transformString) {
+        this.parts = transformString ? TB.stringToParts(transformString) : [];
     };
 
     TB.partToString = function (part) {
         return part.type + '(' + part.values.join(', ') + ')';
+    };
+
+    TB.stringToParts = function (string) {
+        var rPart = /\b([a-z]+)\s*\((.+?)\)/ig;
+        var parts = [];
+        var match;
+        while ((match = rPart.exec(string))) {
+            parts.push({
+                type: match[1],
+                values: match[2].split(',').map(function (s) { return s.trim(); })
+            });
+        }
+        return parts;
     };
 
     TB.prototype.addPart = function (type, values) {

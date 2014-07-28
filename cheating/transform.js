@@ -470,12 +470,13 @@
         outputTransformPartNodes();
     };
 
-    /*
     cheat.setTransform = function (transform) {
-        curTrans = transform;
+        if (!(transform instanceof TransformBuilder)) {
+            throw new TypeError('transform argument should be a TransformBuilder object');
+        }
+        curTransObj = transform;
         cheat.refresh();
     };
-    */
 
     cheat.setOrigin = function (origin) {
         curOrigin = origin;
