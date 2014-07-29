@@ -1,7 +1,7 @@
 /* Page / DevTools misc */
 
 .fake-window {
-    width: 70%;
+    width: 55%;
 }
 .demo-container {
     margin: 4em auto 2em;
@@ -14,11 +14,16 @@
     border-radius: .75em;
     margin: 0 auto;
     padding: 1em;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
     width: 7em;
 }
 
+.fake-chrome .fake-devtools-elements {
+    background-image: url(faker/img/blink-elements-animate.png);
+    background-position: 0 0;
+    background-repeat: no-repeat;
+}
 [data-show-elems="false"] .fake-devtools-elements,
 [data-show-elems="false"] .fake-devtools-elements-content {
     background-image: none;
@@ -32,7 +37,13 @@
 
 #keyframes-root {
     margin: 0 auto;
+    position: relative;
     width: 80%;
+}
+.keyframes-options {
+    position: absolute;
+    right: -10%;
+    top: 0;
 }
 .keyframes-definition {
     line-height: 1.545454545;
@@ -64,11 +75,12 @@
 }
 .kfcss-stop {
     cursor: pointer;
-    padding: 4px 1px;
+    padding: 4px 3px;
+    border-radius: 5px;
 }
 .kfcss-stop:hover,
 .kfcss-stop.active {
-    background-color: #ff9;
+    background-color: hsl(70, 80%, 60%);
 }
 .kfcss-prop-name {
     color: rgb(200, 0, 0);

@@ -19,6 +19,7 @@
     var ref = document.querySelector('#ref');
     var kfRoot = document.querySelector('#keyframes-root');
     var kfTitle = kfRoot.querySelector('.keyframes-title');
+    var kfOptionGraphs = kfRoot.querySelector('#keyframes-option-showTimelineGraphs');
     var kfTimeline = kfRoot.querySelector('.keyframes-timeline');
     var kfDefs = kfRoot.querySelector('.keyframes-definition');
     var devtoolsContent = document.querySelector('.fake-devtools-content');
@@ -28,13 +29,15 @@
 
     // var curAnim = '@-webkit-keyframes bounce {from{top:-100%}50%{top:0}75%{top:-30%}to{top:0}}';
     // var curAnim = '@-webkit-keyframes bounce {from{width:30%;background-color:#B5F0F0;color:black}30%{background-color:blue;color:yellow}50%{width:10%}75%{background-color:green;color:yellow;width:20%}to{width:10%}}';
+    var curAnim = '@-webkit-keyframes sneetches {from{width:30%;background-color:#B5F0F0;color:black}30%,75%{background-color:blue;color:yellow}50%{width:20%}}';
     // https://github.com/daneden/animate.css/blob/master/animate.css
     // var curAnim = '@-webkit-keyframes bounce {\n  0%, 20%, 53%, 80%, 100% {\n    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n    transform: translate3d(0,0,0);\n  }\n  40%, 43% {\n    transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);\n    transform: translate3d(0, -30px, 0);\n  }\n  70% {\n    transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);\n    transform: translate3d(0, -15px, 0);\n  }\n  90% {\n    transform: translate3d(0,-4px,0);\n  }\n}';
-    var curAnim = '@-webkit-keyframes flash {\n  0%, 50%, 100% {\n    opacity: 1;\n  }\n\n  25%, 75% {\n    opacity: 0;\n  }\n}';
+    // var curAnim = '@-webkit-keyframes flash {\n  0%, 50%, 100% {\n    opacity: 1;\n  }\n\n  25%, 75% {\n    opacity: 0;\n  }\n}';
     // var curAnim = '@-webkit-keyframes bounce {from{background-color:red}50%{background-color:green}75%{background-color:darkred}to{background-color:white}}';
     // var curAnim = '@-webkit-keyframes test {from{z-index:0}50%{z-index:10}to{z-index:5}}';
     // var curAnim = '@-webkit-keyframes test-multinumber {from{transform:rotate(45deg);transform-origin:0 0}50%{transform-origin:100% 50%}to{transform:rotate(-45deg);transform-origin:50% 75%}}';
     // var curAnim = '@-webkit-keyframes test-multicolor {from{border-color:red red}50%{border-color:gold pink purple}to{border-color:blue green}}';
+    // var curAnim = '@-webkit-keyframes test-multiframe {0.1%{border-width:0;border-color:teal}30%,90%{border-width:20px}30%,60%{border-color:purple}}';
 
 
     /*****************\
@@ -66,6 +69,7 @@
         var cssPropHandler = classFilter('hoverable', propMouseHandler(cheat.kf.propsList));
         kfDefs.addEventListener('mouseover', cssPropHandler, false);
         kfDefs.addEventListener('mouseout', cssPropHandler, false);
+        kfDefs.addEventListener('click', classFilter('kfcss-prop-value', propClickHandler), false);
 
         var timelinePropHandler = classFilter('kfa-property-name', propMouseHandler(kfDefs));
         cheat.kf.propsList.addEventListener('mouseover', timelinePropHandler, false);
@@ -74,6 +78,9 @@
         // Options
         cheat.options.on('showFakeElems', setShowElems);
         cheat.options.on('showTimelineValues', setShowTimelineValues);
+        kfOptionGraphs.addEventListener('click', function () {
+            cheat.options.set('showTimelineValues', this.checked);
+        }, false);
 
         setShowElems(cheat.options.get('showFakeElems'));
     }
@@ -187,6 +194,50 @@
                 other.classList[method]('active');
             });
         };
+    }
+
+    // EDIT MODE FOR PROPS
+
+    function propClickHandler() {
+        if (!this.classList.contains('editing')) {
+            propEditStart.call(this);
+        }
+    }
+
+    function propKeyHandler(e) {
+        var stopEditing = false;
+        var saveEdit = false;
+        if (e.keyCode === 13 || e.keyCode === 27) {  // Enter or Esc
+            stopEditing = true;
+            if (e.keyCode === 13) {  // Enter
+                saveEdit = true;
+            }
+        }
+        if (stopEditing) {
+            e.preventDefault();
+            propEditStop.call(this, saveEdit);
+        }
+        if (saveEdit) {
+            cheat.setAnimation(kfDefs.textContent);
+        }
+    }
+
+    function propEditStart() {
+        this._origContent = this.textContent;
+        this.addEventListener('keydown', propKeyHandler, false);
+        this.addEventListener('blur', propEditStop, false);
+        this.classList.add('editing');
+        window.getSelection().setBaseAndExtent(this, 0, this, 1);
+    }
+
+    function propEditStop(keepContent) {
+        this.classList.remove('editing');
+        this.removeEventListener('keydown', propKeyHandler, false);
+        this.addEventListener('blur', propEditStop, false);
+        if (!keepContent) {
+            this.textContent = this._origContent || '';
+            delete this._origContent;
+        }
     }
 
 

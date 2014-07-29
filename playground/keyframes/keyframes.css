@@ -51,7 +51,7 @@
 }
 .kfa-header .kfa-marker:hover,
 .kfa-header .kfa-marker.active {
-    background: #ff9;
+    background: hsl(70, 80%, 60%);
 }
 .kfa-header .kfa-marker::after {
     content: '';

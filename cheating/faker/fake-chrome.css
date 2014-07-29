@@ -28,7 +28,7 @@
     width: 100%;
 }
 .fake-chrome .fake-devtools-elements {
-    background: #fff url(img/blink-elements.png) 100% 0;
+    background: #fff url(img/blink-elements.png) 0% 0;
     border-right: 1px solid #a3a3a3;
     display: table-cell;
 }
@@ -53,7 +53,11 @@
     display: none;
 }
 .fake-chrome .fake-devtools-panel-content {
-    min-height: 400px;
+    min-height: 450px;
     box-sizing: border-box;
     padding-bottom: 1em;
+}
+.fake-chrome .fake-devtools-panel-content-styles {
+    background: url(img/blink-side-panel-styles.png) no-repeat;
+    height: 240px;
 }
