@@ -472,7 +472,7 @@
 
     cheat.setTransform = function (transform) {
         if (!(transform instanceof TransformBuilder)) {
-            throw new TypeError('transform argument should be a TransformBuilder object');
+            transform = new TransformBuilder(transform);
         }
         curTransObj = transform;
         cheat.refresh();
