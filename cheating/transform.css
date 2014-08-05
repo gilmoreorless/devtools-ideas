@@ -1,8 +1,8 @@
 .fake-page {
-    height: 16em;
+    height: 14em;
 }
 .fake-window .fake-devtools-panel {
-    width: 350px;
+    width: 330px;
 }
 .demo {
     background: #D8F0B5;
@@ -10,7 +10,7 @@
     float: right;
     margin: 5em 5em 0 0;
     padding: 1em;
-    font-size: 14px;
+    font-size: 11px;
     text-align: left;
     /* width: 10em; */
 }
@@ -164,7 +164,7 @@ h4 {
 .trans-part {
     cursor: pointer;
     padding: 2px 4px;
-    /* margin: 0 -2px; */
+    margin: 0 -2px;
 }
 .trans-part + .trans-part {
     margin-left: -3px;
