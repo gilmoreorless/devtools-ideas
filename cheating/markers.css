@@ -1,0 +1,36 @@
+.fake-window {
+    float: left;
+    margin: 3em;
+    width: 450px;
+}
+.fake-page {
+    text-align: center;
+    min-height: 0;
+}
+
+.tr-icon-rotate::before {
+    content: '';
+    display: inline-block;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    font-weight: bold;
+    margin-right: 0.25em;
+    padding: 0 0.3em;
+    text-shadow: rgba(255, 255, 255, 0.5) 0 1px 0;
+}
+.tr-icon-rotate:hover::before {
+    border-color: rgba(0, 0, 0, 0.5);
+}
+.tr-icon-deg::before {
+    content: 'D';
+}
+.tr-icon-rad::before {
+    content: 'R';
+}
+.tr-icon-grad::before {
+    content: 'G';
+}
+.tr-icon-turn::before {
+    content: 'T';
+}

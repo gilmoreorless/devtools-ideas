@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8">
+    <title>Cheating: Style markers</title>
+    <link rel="stylesheet" href="faker/fake-base.css">
+    <link rel="stylesheet" href="faker/fake-chrome.css">
+    <link rel="stylesheet" href="faker/fake-firefox.css">
+    <link rel="stylesheet" href="faker/fake-firefox-dark.css">
+    <link rel="stylesheet" href="faker/sidebar-chrome.css">
+    <link rel="stylesheet" href="markers.css">
+</head>
+<body>
+
+<!--
+        -~= ROTATE UNITS =~-
+-->
+
+    <div class="fake-window" id="rotate-units">
+        <div class="fake-page">
+            <h3>Change units for rotate transforms</h3>
+        </div>
+        <div class="fake-devtools">
+            <div class="fake-devtools-header">
+                <div class="fake-devtools-header-actions"></div>
+            </div>
+            <div class="fake-devtools-content">
+                <div class="fake-devtools-panel">
+                    <div class="fake-devtools-panel-header fake-active-styles">
+                        <ul class="fake-devtools-panel-tabs">
+                            <li class="selected">Rules</li>
+                            <li>Computed</li>
+                            <li>Box Model</li>
+                        </ul>
+                    </div>
+                    <div class="fake-devtools-panel-content">
+
+<!-- DEVTOOLS CONTENT GOES HERE -->
+<div class="styles-section matched-styles monospace navigable expanded">
+    <div class="header monospace">
+        <div class="subtitle"></div>
+        <div class="title styles-selector">
+            <div class="media-list"></div>
+            <div>
+                <div class="subtitle">
+                    <a class="webkit-html-resource-link" data-uncopyable="styles.css:21"></a>
+                </div>
+                <span class="selector">
+                    <span class="simple-selector selector-matches">#example</span>
+                </span>
+                <span> {</span>
+            </div>
+        </div>
+    </div>
+    <ol class="properties monospace">
+        <li>
+            <input class="enabled-button" type="checkbox" checked>
+            <span class="webkit-css-property" title="transform: rotate(45deg) scale(1.1, 0.9);">transform</span>:
+            <span class="expand-element"></span>
+            <span class="tr-icon-rotate tr-icon-deg"></span><span class="value" id="rotate-units-value">rotate(45deg) scale(1.1, 0.9)</span>;
+        </li>
+    </ol>
+    <div>}</div>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../playground/lib/put.js"></script>
+    <script src="faker/fake-switcher.js"></script>
+
+<!-- SCRIPTS GO HERE -->
+<script src="transform-builder.js"></script>
+<script src="markers.js"></script>
+
+</body>
+</html>
