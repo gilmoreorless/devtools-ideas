@@ -34,7 +34,6 @@
     var rotates = ['deg', 'rad', 'grad', 'turn'];
     var ridx = 0;
     var transBuilder = new TransformBuilder(output.textContent);
-    console.log(transBuilder);
     var tbidx;
     transBuilder.parts.forEach(function (part, i) {
         if (part.type.substr(0, 6) === 'rotate') {
@@ -62,6 +61,57 @@
 
     function update() {
         output.textContent = transBuilder.toString();
+    }
+
+})();
+
+
+/********************\
+| TRANSFORM PREVIEWS |-----------------------------------------------------------------------------------------
+\********************/
+
+(function () {
+
+    var win = document.getElementById('transform-previews');
+    var output = document.getElementById('transform-previews-value');
+
+    var CRAPPY_HARDCODED_MAX_SIZE = 14; // Pixels
+    var transBuilder = new TransformBuilder(output.textContent);
+    update();
+
+    function update() {
+        output.innerHTML = '';
+        transBuilder.parts.forEach(function (part) {
+            var el = put(output, 'span.trans-part')
+            buildPreview(el, part)
+            put(el, '$', TransformBuilder.partToString(part));
+        });
+    }
+
+    function buildPreview(el, part) {
+        // Add preview elements
+        var root = put(el, 'span.trans-preview.trans-preview-' + part.type + ' span.trans-preview-before <');
+        var preview = put(root, 'span.trans-preview-after');
+        preview.style.transform = TransformBuilder.partToString(part);
+        // Scale down preview to fix max width/height
+        var rect = preview.getBoundingClientRect();
+        var ratioW = CRAPPY_HARDCODED_MAX_SIZE / rect.width;
+        var ratioH = CRAPPY_HARDCODED_MAX_SIZE / rect.height;
+        var minRatio = Math.min(ratioW, ratioH);
+        // Account for translate, which doesn't affect bounding rect
+        if (minRatio === 1) {
+            var rootRect = root.getBoundingClientRect();
+            var fullW = Math.max(rect.right, rootRect.right) - Math.min(rect.left, rootRect.left);
+            var fullH = Math.max(rect.bottom, rootRect.bottom) - Math.min(rect.top, rootRect.top);
+            ratioW = CRAPPY_HARDCODED_MAX_SIZE / fullW;
+            ratioH = CRAPPY_HARDCODED_MAX_SIZE / fullH;
+            minRatio = Math.min(ratioW, ratioH);
+        }
+        if (minRatio < 1) {
+            root.style.transform = 'scale(' + minRatio + ')';
+        }
+
+        return root;
     }
 
 })();
