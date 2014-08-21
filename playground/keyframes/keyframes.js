@@ -11,6 +11,7 @@
         this._setup();
     };
 
+
     /*** KeyframeExplainer prototype methods ***/
 
     var kfp = KF.prototype;
@@ -217,6 +218,9 @@
         var normProps = propNames.sort().map(function (prop) {
             return {
                 name: prop,
+                camelName: prop.replace(/-(\w)/g, function (_, s) {
+                    return s.toUpperCase();
+                }),
                 values: props[prop]
             };
         });
@@ -325,23 +329,21 @@
 
     function setElementAnimation(elem, name, timing) {
         var s = elem.style;
-        // TODO: Cross-browser support
         // TODO: Preserve previous inline style values?
-        s.webkitAnimationPlayState = 'paused';
-        s.webkitAnimationDuration = timing.total;
-        s.webkitAnimationDelay = '-' + timing.value;
-        s.webkitAnimationName = name;
+        s.animationPlayState = 'paused';
+        s.animationDuration = timing.total;
+        s.animationDelay = '-' + timing.value;
+        s.animationName = name;
     }
 
     function removeElementAnimation(elem) {
         var s = elem.style;
-        // TODO: Cross-browser support
         // TODO: Preserve previous inline style values?
         var props = [
-            '-webkit-animation-name',
-            '-webkit-animation-duration',
-            '-webkit-animation-delay',
-            '-webkit-animation-play-state'
+            'animation-name',
+            'animation-duration',
+            'animation-delay',
+            'animation-play-state'
         ];
         props.forEach(s.removeProperty.bind(s));
     }
@@ -414,7 +416,7 @@
                 graph.width = parseFloat(style.width);
                 graph.height = parseFloat(style.height);
                 put(parent, graph);
-                var values = propValues[prop.name];
+                var values = propValues[prop.camelName];
                 tlGraphRenderers[graphType](graph, values);
                 return graph;
             }, this);
@@ -435,10 +437,10 @@
             // TODO: Hard-coded updateElems[0] is fragile
             var style = getComputedStyle(this.updateElems[0]);
             this.props.forEach(function (prop) {
-                if (!props[prop.name]) {
-                    props[prop.name] = [];
+                if (!props[prop.camelName]) {
+                    props[prop.camelName] = [];
                 }
-                props[prop.name].push(style[prop.name]);
+                props[prop.camelName].push(style[prop.camelName]);
             });
         }
         if (prevStop != null) {

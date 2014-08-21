@@ -9,7 +9,7 @@
     // PUBLIC OPTIONS
 
     cheat.options = new Options({
-        showFakeElems: ['Show fake elements panel'],
+        showFakeElems: ['Show fake elements panel', true],
         showTimelineValues: ['Show timeline graphs']
     });
 
@@ -27,17 +27,17 @@
 
     // STATE
 
-    // var curAnim = '@-webkit-keyframes bounce {from{top:-100%}50%{top:0}75%{top:-30%}to{top:0}}';
-    // var curAnim = '@-webkit-keyframes bounce {from{width:30%;background-color:#B5F0F0;color:black}30%{background-color:blue;color:yellow}50%{width:10%}75%{background-color:green;color:yellow;width:20%}to{width:10%}}';
-    var curAnim = '@-webkit-keyframes sneetches {from{width:30%;background-color:#B5F0F0;color:black}30%,75%{background-color:blue;color:yellow}50%{width:20%}}';
+    // var curAnim = '@keyframes bounce {from{top:-100%}50%{top:0}75%{top:-30%}to{top:0}}';
+    // var curAnim = '@keyframes bounce {from{width:30%;background-color:#B5F0F0;color:black}30%{background-color:blue;color:yellow}50%{width:10%}75%{background-color:green;color:yellow;width:20%}to{width:10%}}';
+    var curAnim = '@keyframes sneetches {from{width:30%;background-color:#B5F0F0;color:black}30%,75%{background-color:blue;color:yellow}50%{width:20%}}';
     // https://github.com/daneden/animate.css/blob/master/animate.css
-    // var curAnim = '@-webkit-keyframes bounce {\n  0%, 20%, 53%, 80%, 100% {\n    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n    transform: translate3d(0,0,0);\n  }\n  40%, 43% {\n    transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);\n    transform: translate3d(0, -30px, 0);\n  }\n  70% {\n    transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);\n    transform: translate3d(0, -15px, 0);\n  }\n  90% {\n    transform: translate3d(0,-4px,0);\n  }\n}';
-    // var curAnim = '@-webkit-keyframes flash {\n  0%, 50%, 100% {\n    opacity: 1;\n  }\n\n  25%, 75% {\n    opacity: 0;\n  }\n}';
-    // var curAnim = '@-webkit-keyframes bounce {from{background-color:red}50%{background-color:green}75%{background-color:darkred}to{background-color:white}}';
-    // var curAnim = '@-webkit-keyframes test {from{z-index:0}50%{z-index:10}to{z-index:5}}';
-    // var curAnim = '@-webkit-keyframes test-multinumber {from{transform:rotate(45deg);transform-origin:0 0}50%{transform-origin:100% 50%}to{transform:rotate(-45deg);transform-origin:50% 75%}}';
-    // var curAnim = '@-webkit-keyframes test-multicolor {from{border-color:red red}50%{border-color:gold pink purple}to{border-color:blue green}}';
-    // var curAnim = '@-webkit-keyframes test-multiframe {0.1%{border-width:0;border-color:teal}30%,90%{border-width:20px}30%,60%{border-color:purple}}';
+    // var curAnim = '@keyframes bounce {\n  0%, 20%, 53%, 80%, 100% {\n    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);\n    transform: translate3d(0,0,0);\n  }\n  40%, 43% {\n    transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);\n    transform: translate3d(0, -30px, 0);\n  }\n  70% {\n    transition-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);\n    transform: translate3d(0, -15px, 0);\n  }\n  90% {\n    transform: translate3d(0,-4px,0);\n  }\n}';
+    // var curAnim = '@keyframes flash {\n  0%, 50%, 100% {\n    opacity: 1;\n  }\n\n  25%, 75% {\n    opacity: 0;\n  }\n}';
+    // var curAnim = '@keyframes bounce {from{background-color:red}50%{background-color:green}75%{background-color:darkred}to{background-color:white}}';
+    // var curAnim = '@keyframes test {from{z-index:0}50%{z-index:10}to{z-index:5}}';
+    // var curAnim = '@keyframes test-multinumber {from{transform:rotate(45deg);transform-origin:0 0}50%{transform-origin:100% 50%}to{transform:rotate(-45deg);transform-origin:50% 75%}}';
+    // var curAnim = '@keyframes test-multicolor {from{border-color:red red}50%{border-color:gold pink purple}to{border-color:blue green}}';
+    // var curAnim = '@keyframes test-multiframe {0.1%{border-width:0;border-color:teal}30%,90%{border-width:20px}30%,60%{border-color:purple}}';
 
 
     /*****************\
