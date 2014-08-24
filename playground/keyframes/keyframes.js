@@ -1,5 +1,5 @@
 /**
- * Dependencies: put, css-parse
+ * Dependencies: put, css-parse, css-animated-properties
  */
 (function (root) {
 
@@ -70,7 +70,6 @@
 
         put(this.root, this.container);
         this._clearTimelineValues();
-        // this.showTimelineValues();
     };
 
     kfp.addUpdateElement = function (elem) {
@@ -162,6 +161,12 @@
         return parsed;
     }
 
+    function toCamel(str) {
+        return str.replace(/-(\w)/g, function (_, s) {
+            return s.toUpperCase();
+        });
+    }
+
     function sortFrames(a, b) {
         var valA = parseFloat(a.stop) || 0;
         var valB = parseFloat(b.stop) || 0;
@@ -205,22 +210,22 @@
         frames.forEach(function (frame) {
             frame.declarations.forEach(function (dec) {
                 var prop = dec.property;
-                if (!props[prop]) {
-                    props[prop] = [];
-                    propNames.push(prop);
+                if (cssAnimProps.canAnimate(prop)) {
+                    if (!props[prop]) {
+                        props[prop] = [];
+                        propNames.push(prop);
+                    }
+                    props[prop].push({
+                        stop: frame.stop,
+                        value: dec.value
+                    });
                 }
-                props[prop].push({
-                    stop: frame.stop,
-                    value: dec.value
-                });
             });
         });
         var normProps = propNames.sort().map(function (prop) {
             return {
                 name: prop,
-                camelName: prop.replace(/-(\w)/g, function (_, s) {
-                    return s.toUpperCase();
-                }),
+                camelName: toCamel(prop),
                 values: props[prop]
             };
         });
@@ -406,8 +411,22 @@
         if (!this._timelineValueNodes) {
             var propValues = this.getTimelineValues();
             this._timelineValueNodes = this.props.map(function (prop) {
-                var graphType = tlGraphTypes[prop.name];
-                if (!graphType) {
+                var propAnim = cssAnimProps.getProperty(prop.name, true);
+                // Don't show properties that can't be animated
+                if (!propAnim) {
+                    return;
+                }
+                var graphRenderer;
+                if (propAnim.types) {
+                    propAnim.types.forEach(function (type) {
+                        type = toCamel(type);
+                        if (!graphRenderer && tlGraphRenderers[type]) {
+                            graphRenderer = type;
+                        }
+                    });
+                }
+                // TODO: Handle nested properties
+                if (!graphRenderer) {
                     return;
                 }
                 var parent = this.timelineList.querySelector('[data-property=' + prop.name + ']');
@@ -417,7 +436,7 @@
                 graph.height = parseFloat(style.height);
                 put(parent, graph);
                 var values = propValues[prop.camelName];
-                tlGraphRenderers[graphType](graph, values);
+                tlGraphRenderers[graphRenderer](graph, values);
                 return graph;
             }, this);
         }
@@ -458,93 +477,6 @@
         this._timelineValueNodes = null;
     };
 
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties
-    var tlGraphTypes = {
-        'transform': 'transform',
-        'transform-origin': 'multinumber',
-        'perspective': 'number',
-        'perspective-origin': 'multinumber',
-        'color': 'color',
-        'opacity': 'number',
-        'columns': 'multinumber',
-        'column-count': 'integer',
-        'column-width': 'number',
-        'column-gap': 'number',
-        'column-rule': 'MULTIRULE',
-        'column-rule-color': 'color',
-        'column-rule-width': 'number',
-        'letter-spacing': 'number',
-        'text-indent': 'number',
-        'word-spacing': 'number',
-        'text-decoration': 'MULTIRULE',
-        'text-decoration-color': 'color',
-        'text-shadow': 'shadow',
-        'flex': 'MULTIRULE',
-        'flex-basis': 'number',
-        'flex-grow': 'number',
-        'flex-shrink': 'number',
-        'order': 'integer',
-        'background': 'MULTIRULE',
-        'background-color': 'color',
-        'background-position': 'multinumber',
-        'background-size': 'multinumber',
-        'border': 'MULTIRULE',
-        'border-bottom': 'MULTIRULE',
-        'border-left': 'MULTIRULE',
-        'border-right': 'MULTIRULE',
-        'border-top': 'MULTIRULE',
-        'border-color': 'multicolor',
-        'border-width': 'multinumber',
-        'border-bottom-color': 'color',
-        'border-left-color': 'color',
-        'border-right-color': 'color',
-        'border-top-color': 'color',
-        'border-bottom-width': 'number',
-        'border-left-width': 'number',
-        'border-right-width': 'number',
-        'border-top-width': 'number',
-        'border-radius': 'multinumber',
-        'border-top-left-radius': 'number',
-        'border-top-right-radius': 'number',
-        'border-bottom-right-radius': 'number',
-        'border-bottom-left-radius': 'number',
-        'box-shadow': 'shadow',
-        'margin': 'MULTIRULE',
-        'margin-bottom': 'number',
-        'margin-left': 'number',
-        'margin-right': 'number',
-        'margin-top': 'number',
-        'padding': 'MULTIRULE',
-        'padding-bottom': 'number',
-        'padding-left': 'number',
-        'padding-right': 'number',
-        'padding-top': 'number',
-        'height': 'number',
-        'max-height': 'number',
-        'min-height': 'number',
-        'width': 'number',
-        'max-width': 'number',
-        'min-width': 'number',
-        'visibility': 'visibility',
-        'vertical-align': 'number',
-        'bottom': 'number',
-        'left': 'number',
-        'right': 'number',
-        'top': 'number',
-        'z-index': 'integer',
-        'font': 'MULTIRULE',
-        'font-weight': 'fontWeight',
-        'font-stretch': 'fontStretch',
-        'font-size': 'number',
-        'line-height': 'number',
-        'font-size-adjust': 'number',
-        'outline': 'MULTIRULE',
-        'outline-color': 'color',
-        'outline-width': 'number',
-        'outline-offset': 'number',
-        'clip': 'rectangle',
-    };
-
     var tlGraphRenderers = {
         color: function (canvas, values, options) {
             options = options || {};
@@ -562,6 +494,7 @@
                 ctx.fillRect(wpi, topY, wpart + 1, h);
             });
         },
+        /*
         multicolor: function (canvas, values) {
             var splitValues = values.map(function (value) {
                 var match = value.match(/rgb\(.*?\)/g);
@@ -581,6 +514,7 @@
                 });
             }
         },
+        */
         number: function (canvas, values, options) {
             options = options || {};
             var ctx = canvas.getContext('2d');
@@ -617,6 +551,7 @@
             ctx.fillStyle = gradient;
             ctx.fill();
         },
+        /*
         multinumber: function (canvas, values) {
             var splitValues = values.map(function (value) {
                 // TODO: More robust splitting, handle "/" as divider
@@ -636,6 +571,7 @@
                 });
             }
         },
+        */
         integer: function (canvas, values) {
             tlGraphRenderers.number.call(this, canvas, values, {
                 discreteValues: true
@@ -644,8 +580,8 @@
         rectangle: function (canvas, values) {
             console.warn('Unimplemented timeline renderer: rectangle');
         },
-        shadow: function (canvas, values) {
-            console.warn('Unimplemented timeline renderer: shadow');
+        shadowList: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: shadowList');
         },
         transform: function (canvas, values) {
             console.warn('Unimplemented timeline renderer: transform');
@@ -659,10 +595,13 @@
         fontStretch: function (canvas, values) {
             console.warn('Unimplemented timeline renderer: fontStretch');
         },
-        MULTIRULE: function (canvas, values) {
-            console.warn('Unimplemented timeline renderer: MULTIRULE');
+        basicShape: function (canvas, values) {
+            console.warn('Unimplemented timeline renderer: basicShape');
         }
-    }
+    };
+
+    // Aliases
+    tlGraphRenderers.length = tlGraphRenderers.percentage = tlGraphRenderers.calc = tlGraphRenderers.number;
 
 
 })(typeof module !== 'undefined' && module.exports || this);

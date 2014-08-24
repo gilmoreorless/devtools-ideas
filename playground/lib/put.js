@@ -1,5 +1,8 @@
+/*!
+ * put-selector: https://github.com/kriszyp/put-selector
+ */
 (function(define){
-var forDocument, fragmentFasterHeuristic = /[-+,> ]/; // if it has any of these combinators, it is probably going to be faster with a document fragment 
+var forDocument, fragmentFasterHeuristic = /[-+,> ]/; // if it has any of these combinators, it is probably going to be faster with a document fragment
 define([], forDocument = function(doc, newFragmentFasterHeuristic){
 "use strict";
 	// module:
@@ -15,7 +18,7 @@ define([], forDocument = function(doc, newFragmentFasterHeuristic){
 	var selectorParse = /(?:\s*([-+ ,<>]))?\s*(\.|!\.?|#)?([-\w%$|]+)?(?:\[([^\]=]+)=?['"]?([^\]'"]*)['"]?\])?/g,
 		undefined, namespaceIndex, namespaces = false,
 		doc = doc || document,
-		ieCreateElement = typeof doc.createElement == "object"; // telltale sign of the old IE behavior with createElement that does not support later addition of name 
+		ieCreateElement = typeof doc.createElement == "object"; // telltale sign of the old IE behavior with createElement that does not support later addition of name
 	function insertTextNode(element, text){
 		element.appendChild(doc.createTextNode(text));
 	}
@@ -24,19 +27,19 @@ define([], forDocument = function(doc, newFragmentFasterHeuristic){
 			args = arguments,
 			returnValue = args[0]; // use the first argument as the default return value in case only an element is passed in
 		function insertLastElement(){
-			// we perform insertBefore actions after the element is fully created to work properly with 
+			// we perform insertBefore actions after the element is fully created to work properly with
 			// <input> tags in older versions of IE that require type attributes
 			//	to be set before it is attached to a parent.
-			// We also handle top level as a document fragment actions in a complex creation 
+			// We also handle top level as a document fragment actions in a complex creation
 			// are done on a detached DOM which is much faster
-			// Also if there is a parse error, we generally error out before doing any DOM operations (more atomic) 
+			// Also if there is a parse error, we generally error out before doing any DOM operations (more atomic)
 			if(current && referenceElement && current != referenceElement){
 				(referenceElement == topReferenceElement &&
-					// top level, may use fragment for faster access 
-					(fragment || 
-						// fragment doesn't exist yet, check to see if we really want to create it 
+					// top level, may use fragment for faster access
+					(fragment ||
+						// fragment doesn't exist yet, check to see if we really want to create it
 						(fragment = fragmentFasterHeuristic.test(argument) && doc.createDocumentFragment()))
-							// any of the above fails just use the referenceElement  
+							// any of the above fails just use the referenceElement
 							 ? fragment : referenceElement).
 								insertBefore(current, nextSibling || null); // do the actual insertion
 			}
@@ -62,7 +65,7 @@ define([], forDocument = function(doc, newFragmentFasterHeuristic){
 					// an object hash
 					for(var key in argument){
 						current[key] = argument[key];
-					}				
+					}
 				}
 			}else if(lastSelectorArg){
 				// a text node should be created
@@ -81,7 +84,7 @@ define([], forDocument = function(doc, newFragmentFasterHeuristic){
 						// insert the last current object
 						insertLastElement();
 						if(combinator == '-' || combinator == '+'){
-							// + or - combinator, 
+							// + or - combinator,
 							// TODO: add support for >- as a means of indicating before the first child?
 							referenceElement = (nextSibling = (current || referenceElement)).parentNode;
 							current = null;
@@ -118,12 +121,12 @@ define([], forDocument = function(doc, newFragmentFasterHeuristic){
 							tag = tag || put.defaultTag;
 							var ieInputName = ieCreateElement && args[i +1] && args[i +1].name;
 							if(ieInputName){
-								// in IE, we have to use the crazy non-standard createElement to create input's that have a name 
+								// in IE, we have to use the crazy non-standard createElement to create input's that have a name
 								tag = '<' + tag + ' name="' + ieInputName + '">';
 							}
 							// we swtich between creation methods based on namespace usage
 							current = namespaces && ~(namespaceIndex = tag.indexOf('|')) ?
-								doc.createElementNS(namespaces[tag.slice(0, namespaceIndex)], tag.slice(namespaceIndex + 1)) : 
+								doc.createElementNS(namespaces[tag.slice(0, namespaceIndex)], tag.slice(namespaceIndex + 1)) :
 								doc.createElement(tag);
 						}
 					}
