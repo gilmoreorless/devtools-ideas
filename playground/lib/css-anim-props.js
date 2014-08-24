@@ -1,6 +1,6 @@
 /*!
  * https://github.com/gilmoreorless/css-animated-properties
- * MIT Licensed: http://gilmoreorless.mitlicense.org/
+ * MIT Licensed: http://gilmoreorless.mit-license.org/
  */
 (function (exports) {
     /**
